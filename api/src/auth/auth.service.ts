@@ -30,7 +30,7 @@ export class AuthService {
     const user = await this.userService.findOneByEmail(identity);
 
     if (!user) return null;
-    if (!(await compare(password, user.password))) return null;
+    if (user.password && !(await compare(password, user.password))) return null;
     return user;
   }
 

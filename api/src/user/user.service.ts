@@ -9,12 +9,12 @@ export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
   async findAll() {
-    return await this.prisma.user.findMany();
+    return this.prisma.user.findMany();
   }
 
   async findOne(id: string) {
     validateUUID(id);
-    return await this.prisma.user.findUnique({
+    return this.prisma.user.findUnique({
       where: { id },
     });
   }
@@ -25,21 +25,25 @@ export class UserService {
     });
   }
 
+  async findOneByOAuthID(oauthId: string) {
+    return this.prisma.user.findUnique({ where: { oauthId } });
+  }
+
   async create(data: CreateUserDTO) {
     const parsedData = { ...data, password: await hash(data.password, 10) };
-    return await this.prisma.user.create({ data: parsedData });
+    return this.prisma.user.create({ data: parsedData });
   }
 
   async delete(id: string) {
     validateUUID(id);
-    return await this.prisma.user.delete({
+    return this.prisma.user.delete({
       where: { id },
     });
   }
 
   async update(id: string, data: UpdateUserDTO) {
     validateUUID(id);
-    return await this.prisma.user.update({
+    return this.prisma.user.update({
       where: { id },
       data,
     });
