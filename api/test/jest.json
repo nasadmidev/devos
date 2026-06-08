@@ -15,6 +15,10 @@
   },
   "collectCoverageFrom": ["**/*.(t|j)s"],
   "coverageDirectory": "../coverage",
+  "coveragePathIgnorePatterns": [
+    "node_modules",
+    ".*\\e2e-spec\\.ts$"
+  ],
   "testEnvironment": "node",
   "moduleNameMapper": {
     "^@/(.*)$": "<rootDir>/$1",
