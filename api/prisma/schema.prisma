@@ -4,8 +4,8 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
   moduleFormat = "cjs"
 }
 
@@ -19,10 +19,244 @@ enum Role {
 }
 
 model User {
-  id        String   @id @db.Uuid @default(uuid())
-  username  String   @unique
+  id        String   @id @default(uuid()) @db.Uuid
   email     String   @unique
-  role      Role
+  oauthId   String?  @unique
+  role      Role     @default(USER)
   password  String
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  visuals             Visual[]
+  doubts              Doubt[]
+  resources           Resource[]
+  likesToVisuals      VisualLike[]
+  likesToResources    ResourceLike[]
+  commentsToVisuals   VisualComment[]
+  commentsToResources ResourceComment[]
+  answersToDoubts     Answer[]
+  commentsToAnswer    AnswerComment[]
+  reportsToVisual     VisualReport[]
+  reportsToResource   ResourceReport[]
+  reportsToDoubt      DoubtReport[]
+  fromUserReports     UserReport[]       @relation("FromUserReports")
+  toUserReports       UserReport[]       @relation("ToUserReports")
+  bookmarkedVisual    VisualBookmark[]
+  bookmarkedResource  ResourceBookmark[]
+}
+
+// Posts
+model Visual {
+  id          String   @id @default(uuid()) @db.Uuid
+  authorId    String   @db.Uuid
+  title       String
+  url         String
+  description String   @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  likes        VisualLike[]
+  comments     VisualComment[]
+  reports      VisualReport[]
+  bookmarkedBy VisualBookmark[]
+  author       User             @relation(fields: [authorId], references: [id], onDelete: Cascade)
+}
+
+model Doubt {
+  id          String   @id @default(uuid()) @db.Uuid
+  authorId    String   @db.Uuid
+  title       String
+  description String   @db.Text
+  code        String?  @db.Text
+  tags        String[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  author  User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  answers Answer[]
+  reports DoubtReport[]
+}
+
+model Resource {
+  id          String   @id @default(uuid()) @db.Uuid
+  authorId    String   @db.Uuid
+  title       String
+  description String   @db.Text
+  url         String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  likes        ResourceLike[]
+  comments     ResourceComment[]
+  reports      ResourceReport[]
+  bookmarkedBy ResourceBookmark[]
+  author       User               @relation(fields: [authorId], references: [id], onDelete: Cascade)
+}
+
+// Post Interactions
+model VisualLike {
+  id       Int    @id @default(autoincrement())
+  userId   String @db.Uuid
+  visualId String @db.Uuid
+
+  visual Visual @relation(fields: [visualId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, visualId])
+}
+
+model ResourceLike {
+  id         Int    @id @default(autoincrement())
+  userId     String @db.Uuid
+  resourceId String @db.Uuid
+
+  resource Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, resourceId])
+}
+
+model VisualComment {
+  id        String   @id @default(uuid()) @db.Uuid
+  parentId  String?  @db.Uuid
+  visualId  String   @db.Uuid
+  userId    String   @db.Uuid
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  visual   Visual          @relation(fields: [visualId], references: [id], onDelete: Cascade)
+  user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent   VisualComment?  @relation("VisualChildComments", fields: [parentId], references: [id], onDelete: Cascade)
+  children VisualComment[] @relation("VisualChildComments")
+}
+
+model ResourceComment {
+  id         String   @id @default(uuid()) @db.Uuid
+  parentId   String?  @db.Uuid
+  resourceId String   @db.Uuid
+  userId     String   @db.Uuid
+  content    String   @db.Text
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  resource Resource          @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  user     User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent   ResourceComment?  @relation("ResourceChildComments", fields: [parentId], references: [id], onDelete: Cascade)
+  children ResourceComment[] @relation("ResourceChildComments")
+}
+
+// User Interactions
+model VisualBookmark {
+  id       String @id @default(uuid()) @db.Uuid
+  userId   String @db.Uuid
+  visualId String @db.Uuid
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  visual   Visual @relation(fields: [visualId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, visualId])
+}
+
+model ResourceBookmark {
+  id         String   @id @default(uuid()) @db.Uuid
+  userId     String   @db.Uuid
+  resourceId String   @db.Uuid
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resource   Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, resourceId])
+}
+
+// Doubt Answers
+model Answer {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  doubtId   String   @db.Uuid
+  content   String   @db.Text
+  code      String?  @db.Text
+  correct   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  doubt    Doubt           @relation(fields: [doubtId], references: [id], onDelete: Cascade)
+  comments AnswerComment[]
+}
+
+model AnswerComment {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  answerId  String   @db.Uuid
+  parentId  String?  @db.Uuid
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  answer   Answer          @relation(fields: [answerId], references: [id], onDelete: Cascade)
+  parent   AnswerComment?  @relation("AnswerChildComments", fields: [parentId], references: [id], onDelete: Cascade)
+  children AnswerComment[] @relation("AnswerChildComments")
+}
+
+// Reports
+
+enum ReportType {
+  NOT_TECH_RELATED
+  SPAM
+  PLAGIARISM
+  MALICIOUS_CODE
+  TOXIC_BEHAVIOR
+  OTHER
+}
+
+model UserReport {
+  id         String     @id @default(uuid()) @db.Uuid
+  fromUserId String     @db.Uuid
+  toUserId   String     @db.Uuid
+  type       ReportType @default(OTHER)
+  reason     String     @db.Text
+
+  fromUser User @relation("FromUserReports", fields: [fromUserId], references: [id], onDelete: Cascade)
+  toUser   User @relation("ToUserReports", fields: [toUserId], references: [id], onDelete: Cascade)
+
+  @@unique([toUserId, fromUserId])
+}
+
+model VisualReport {
+  id       String     @id @default(uuid()) @db.Uuid
+  userId   String     @db.Uuid
+  visualId String     @db.Uuid
+  type     ReportType @default(OTHER)
+  reason   String     @db.Text
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  visual Visual @relation(fields: [visualId], references: [id], onDelete: Cascade)
+
+  @@unique([visualId, userId])
+}
+
+model ResourceReport {
+  id         String     @id @default(uuid()) @db.Uuid
+  userId     String     @db.Uuid
+  resourceId String     @db.Uuid
+  type       ReportType @default(OTHER)
+  reason     String     @db.Text
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resource Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  @@unique([resourceId, userId])
+}
+
+model DoubtReport {
+  id      String     @id @default(uuid()) @db.Uuid
+  userId  String     @db.Uuid
+  doubtId String     @db.Uuid
+  type    ReportType @default(OTHER)
+  reason  String     @db.Text
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  doubt Doubt @relation(fields: [doubtId], references: [id], onDelete: Cascade)
+
+  @@unique([doubtId, userId])
 }

@@ -62,15 +62,6 @@ describe('UserService', () => {
     });
   });
 
-  it('should find one user by username', async () => {
-    prismaMock.user.findUnique.mockResolvedValue(user);
-    const result = await service.findOneByUsername(user.username);
-    expect(result).toEqual(user);
-    expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
-      where: { username: user.username },
-    });
-  });
-
   it('should find one user by email', async () => {
     prismaMock.user.findUnique.mockResolvedValue(user);
     const result = await service.findOneByEmail(user.email);

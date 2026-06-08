@@ -12,7 +12,6 @@ import { TokenExpiredError, JsonWebTokenError } from '@nestjs/jwt';
 
 export type JwtPayload = {
   sub: string;
-  username: string;
   role: string;
   exp?: number;
   iat?: number;
@@ -28,9 +27,7 @@ export class AuthService {
   ) {}
 
   async authenticate({ identity, password }: AuthDTO) {
-    const user = identity.includes('@')
-      ? await this.userService.findOneByEmail(identity)
-      : await this.userService.findOneByUsername(identity);
+    const user = await this.userService.findOneByEmail(identity);
 
     if (!user) return null;
     if (!(await compare(password, user.password))) return null;
@@ -39,9 +36,9 @@ export class AuthService {
 
   async login(user: User | null) {
     if (!user) throw new BadRequestException('User is required');
-    const { id, username, role } = user;
+    const { id, role } = user;
 
-    const payload = { sub: id, username, role };
+    const payload = { sub: id, role };
     return await this.jwt.signAsync(payload);
   }
 

@@ -15,8 +15,9 @@ Para el MVP, el núcleo de la aplicación será un Feed Unificado donde conviven
 	3. Recurso: título descripción o un enlace externo
 3. **Interacción**
 	1. Likes
-	2. Comentarios
-	3. Respuestas: para hilos de dudas, que el autor pueda marcar una como correcta
+	2. Bookmarks
+	3. Comentarios
+	4. Respuestas: para hilos de dudas, que el autor pueda marcar una como correcta
 4. **Motor de búsqueda y filtros**
 	1. Filtrar el feed por tipo de publicación
 		1. _All_
