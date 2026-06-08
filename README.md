@@ -28,7 +28,7 @@ Para el MVP, el núcleo de la aplicación será un Feed Unificado donde conviven
 5. **Seguridad** con sistemas de reportes tanto a publicaciones como usuarios
 6. **Sistema de notificaciones y mensajería** con Redis (pensado para el futuro)
 
-## Arquitéctura y Stack tecnológico
+## Arquitectura y Stack tecnológico
 1. **Backend**: NestJs
 2. **Base de datos**: Prisma con PostgreSQL y Redis con ioredis
 3. **Autenticación**: JWT + OAuth 2.0
