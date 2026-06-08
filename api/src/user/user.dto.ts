@@ -1,7 +1,5 @@
 import {
   IsEmail,
-  IsEnum,
-  IsLowercase,
   IsNotEmpty,
   IsString,
   IsStrongPassword,
@@ -9,21 +7,8 @@ import {
 } from 'class-validator';
 
 import { PartialType, ApiProperty } from '@nestjs/swagger';
-import { Role } from '@/generated/prisma/enums';
-import { IsNoSymbols } from './no-symbols.decorator';
 
 export class CreateUserDTO {
-  @ApiProperty({
-    description: 'Username (lowercase, alphanumeric only)',
-    example: 'johndoe',
-  })
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(255)
-  @IsLowercase()
-  @IsNoSymbols()
-  username!: string;
-
   @ApiProperty({
     description: 'User email address',
     example: 'johndoe@example.com',
@@ -49,16 +34,6 @@ export class CreateUserDTO {
     minSymbols: 0,
   })
   password!: string;
-
-  @ApiProperty({
-    description: 'User role',
-    enum: Role,
-    example: Role.USER,
-  })
-  @IsString()
-  @IsNotEmpty()
-  @IsEnum(Role)
-  role!: Role;
 }
 
 export class UpdateUserDTO extends PartialType(CreateUserDTO) {}

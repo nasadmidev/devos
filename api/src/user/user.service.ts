@@ -8,8 +8,19 @@ import { hash } from 'bcrypt';
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll() {
-    return this.prisma.user.findMany();
+  async findAll(lastIndex?: string) {
+    if (lastIndex) validateUUID(lastIndex);
+    return this.prisma.user.findMany({
+      take: 50,
+      ...(lastIndex
+        ? {
+            cursor: {
+              id: lastIndex,
+            },
+            skip: 1,
+          }
+        : {}),
+    });
   }
 
   async findOne(id: string) {

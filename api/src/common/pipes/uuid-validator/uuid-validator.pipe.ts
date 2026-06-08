@@ -28,6 +28,10 @@ export class UuidValidatorPipe<T = unknown> implements PipeTransform {
       this.isUUIDParamValid(value as string);
     }
 
+    if (metadata.type === 'query') {
+      this.isUUIDQueryValid(value);
+    }
+
     if (metadata.type === 'body') {
       this.isPropertyUUIDValid(value as T);
     }
@@ -49,5 +53,21 @@ export class UuidValidatorPipe<T = unknown> implements PipeTransform {
         }
       }
     }
+  }
+
+  private isUUIDQueryValid(value: string | T | undefined) {
+    if (typeof value === 'undefined') {
+      return value;
+    }
+
+    if (typeof value === 'object') {
+      return this.isPropertyUUIDValid(value);
+    }
+
+    if (typeof value === 'string' && !isUUID(value)) {
+      throw new InvalidUUIDException(value, 'query');
+    }
+
+    return value;
   }
 }

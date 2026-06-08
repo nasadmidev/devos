@@ -7,6 +7,7 @@ import {
   Req,
   Put,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import type { RequestAuthorized } from '@/auth/auth.service';
@@ -20,6 +21,7 @@ import {
   ApiResponse,
   ApiBearerAuth,
   ApiParam,
+  ApiQuery,
 } from '@nestjs/swagger';
 
 @ApiTags('user')
@@ -34,8 +36,14 @@ export class UserController {
   @ApiResponse({ status: 200, description: 'List of all users' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 403, description: 'Forbidden - admin only' })
-  async getAllUsers() {
-    return await this.userService.findAll();
+  @ApiQuery({
+    name: 'lastIndex',
+    description: 'last id obtained for pagination',
+    type: 'string',
+    example: '1c4493e0-62ff-4b16-a46e-153c9376567c',
+  })
+  async getAllUsers(@Query('lastIndex', UuidValidatorPipe) lastIndex?: string) {
+    return await this.userService.findAll(lastIndex);
   }
 
   @Get()
