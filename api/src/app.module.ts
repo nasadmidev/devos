@@ -8,6 +8,7 @@ import { UserModule } from './user/user.module';
 import { HealthModule } from './health/health.module';
 import { JwtGuard } from './auth/jwt/jwt.guard';
 import { RolesGuard } from './auth/roles/role.guard';
+import { ProfileModule } from './profile/profile.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { RolesGuard } from './auth/roles/role.guard';
     AuthModule,
     UserModule,
     HealthModule,
+    ProfileModule,
   ],
   providers: [
     {

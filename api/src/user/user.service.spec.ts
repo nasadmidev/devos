@@ -4,7 +4,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { randomUUID } from 'crypto';
 import bcrypt from 'bcrypt';
-import { Role } from '@/generated/prisma/enums';
+import { AuthType, Role } from '@/generated/prisma/enums';
 
 describe('UserService', () => {
   let service: UserService;
@@ -40,7 +40,10 @@ describe('UserService', () => {
 
   const user = {
     id,
+    oauthId: null,
+    authType: AuthType['LOCAL'],
     ...createUser,
+    updatedAt: new Date(),
     createdAt: new Date(),
   };
 
@@ -100,7 +103,7 @@ describe('UserService', () => {
   });
 
   it('should update a user', async () => {
-    const updateData = { username: 'Jane Doe' };
+    const updateData = { email: 'Jane Doe' };
     const updatedUser = { ...user, ...updateData };
     prismaMock.user.update.mockResolvedValue(updatedUser);
 

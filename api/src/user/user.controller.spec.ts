@@ -47,10 +47,12 @@ describe('UserController', () => {
   describe('admin operations', () => {
     const mockUser: User = {
       id: '1',
-      username: 'testuser',
       email: 'test@example.com',
       password: 'hashedpassword',
       role: 'ADMIN',
+      authType: 'LOCAL',
+      oauthId: null,
+      updatedAt: new Date(),
       createdAt: new Date(),
     };
 
@@ -82,7 +84,7 @@ describe('UserController', () => {
 
     it('should update user by id for admin', async () => {
       const updateUserDTO = {
-        username: 'updateduser',
+        email: 'updateduser',
       };
       const updatedUser = { ...mockUser, ...updateUserDTO };
       userServiceMock.update.mockResolvedValue(updatedUser);
@@ -100,10 +102,12 @@ describe('UserController', () => {
   describe('user operations', () => {
     const mockUser: User = {
       id: '1',
-      username: 'testuser',
       email: 'test@example.com',
       password: 'hashedpassword',
-      role: 'USER',
+      role: 'ADMIN',
+      authType: 'LOCAL',
+      oauthId: null,
+      updatedAt: new Date(),
       createdAt: new Date(),
     };
 
@@ -116,7 +120,7 @@ describe('UserController', () => {
 
     it('should update user data for authenticated user', async () => {
       const updateUserDTO = {
-        username: 'updateduser',
+        email: 'updateduser',
       };
       const updatedUser = { ...mockUser, ...updateUserDTO };
       userServiceMock.update.mockResolvedValue(updatedUser);

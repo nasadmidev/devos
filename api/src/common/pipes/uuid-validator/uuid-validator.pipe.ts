@@ -11,6 +11,25 @@ export const validateUUID = (id: string, fieldName = 'ID') => {
   if (!isUUID(id)) throw new InvalidUUIDException(id, fieldName);
 };
 
+export const verifyUUIDs = <T = object>(
+  data: string[] | T,
+  keys?: Array<keyof T>,
+) => {
+  if (keys && keys.length > 0) {
+    const d = data as T;
+    for (const k of keys) {
+      if (typeof d[k] === 'string') {
+        validateUUID(d[k]);
+      }
+    }
+  } else {
+    const d = data as string[];
+    for (const i of d) {
+      validateUUID(i);
+    }
+  }
+};
+
 /**
  * @example
  * // use like body pipe
