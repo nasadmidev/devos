@@ -17,7 +17,8 @@
   "coverageDirectory": "../coverage",
   "coveragePathIgnorePatterns": [
     "node_modules",
-    ".*\\e2e-spec\\.ts$"
+    ".*\\e2e-spec\\.ts$",
+    "__mocks__"
   ],
   "testEnvironment": "node",
   "moduleNameMapper": {

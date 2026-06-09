@@ -58,9 +58,9 @@ export class ProfileController {
     example: 'nasadmidev',
     required: true,
   })
-  async getProfileByUsername(@Param('name') name: string) {
+  async getProfileByName(@Param('name') name: string) {
     if (!name) {
-      throw new BadRequestException('Name parameter is requested');
+      throw new BadRequestException('Name parameter is required');
     }
     return this.profileService.findOne({ name });
   }

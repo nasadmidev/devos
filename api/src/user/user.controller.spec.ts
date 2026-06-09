@@ -4,9 +4,13 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { UserService } from './user.service';
 import { JwtGuard } from '@/auth/jwt/jwt.guard';
 import { JwtService } from '@nestjs/jwt';
-import { Role, User } from '@/generated/prisma/client';
+import { User } from '@/generated/prisma/client';
 import { RolesGuard } from '@/auth/roles/role.guard';
 import { RequestAuthorized } from '@/auth/auth.service';
+import {
+  user as mockUser,
+  createUser as createUserDTO,
+} from '@/__mocks__/user/user.mock';
 
 describe('UserController', () => {
   let controller: UserController;
@@ -45,17 +49,6 @@ describe('UserController', () => {
   });
 
   describe('admin operations', () => {
-    const mockUser: User = {
-      id: '1',
-      email: 'test@example.com',
-      password: 'hashedpassword',
-      role: 'ADMIN',
-      authType: 'LOCAL',
-      oauthId: null,
-      updatedAt: new Date(),
-      createdAt: new Date(),
-    };
-
     it('should return all users for admin', async () => {
       const mockUsers: User[] = [mockUser, mockUser];
       userServiceMock.findAll.mockResolvedValue(mockUsers);
@@ -70,12 +63,6 @@ describe('UserController', () => {
     });
 
     it('should create a new user', async () => {
-      const createUserDTO = {
-        username: 'newuser',
-        email: 'newuser@example.com',
-        password: 'password',
-        role: Role['USER'],
-      };
       const createdUser = { ...mockUser, ...createUserDTO, id: '2' };
       userServiceMock.create.mockResolvedValue(createdUser);
       const result = await controller.createUser(createUserDTO);
@@ -100,17 +87,6 @@ describe('UserController', () => {
   });
 
   describe('user operations', () => {
-    const mockUser: User = {
-      id: '1',
-      email: 'test@example.com',
-      password: 'hashedpassword',
-      role: 'ADMIN',
-      authType: 'LOCAL',
-      oauthId: null,
-      updatedAt: new Date(),
-      createdAt: new Date(),
-    };
-
     it('should return user data for authenticated user', async () => {
       userServiceMock.findOne.mockResolvedValue(mockUser);
       const req = { user: { sub: '1' } } as RequestAuthorized;

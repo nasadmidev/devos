@@ -2,9 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from './user.service';
 import { PrismaService } from '@/prisma/prisma.service';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
-import { randomUUID } from 'crypto';
+import { id, createUser, user } from '@/__mocks__/user/user.mock';
 import bcrypt from 'bcrypt';
-import { AuthType, Role } from '@/generated/prisma/enums';
 
 describe('UserService', () => {
   let service: UserService;
@@ -28,24 +27,6 @@ describe('UserService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
-
-  const id = randomUUID();
-
-  const createUser = {
-    username: 'John Doe',
-    email: 'john.doe@example.com',
-    password: 'hashed-password',
-    role: Role['USER'],
-  };
-
-  const user = {
-    id,
-    oauthId: null,
-    authType: AuthType['LOCAL'],
-    ...createUser,
-    updatedAt: new Date(),
-    createdAt: new Date(),
-  };
 
   it('should find all users', async () => {
     prismaMock.user.findMany.mockResolvedValue([user]);
