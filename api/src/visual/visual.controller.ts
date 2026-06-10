@@ -171,7 +171,9 @@ export class VisualController {
     @Param('id', UuidValidatorPipe) id: string,
     @Req() req: RequestAuthorized,
   ) {
-    return this.visualService.toggleLike(id, req.user.sub);
+    return {
+      state: await this.visualService.toggleLike(id, req.user.sub),
+    };
   }
 
   @Patch(':id/bookmark')
@@ -186,7 +188,9 @@ export class VisualController {
     @Param('id', UuidValidatorPipe) id: string,
     @Req() req: RequestAuthorized,
   ) {
-    return this.visualService.toggleBookmark(id, req.user.sub);
+    return {
+      state: await this.visualService.toggleBookmark(id, req.user.sub),
+    };
   }
 
   @Post(':id/comments')

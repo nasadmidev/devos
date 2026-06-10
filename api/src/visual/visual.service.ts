@@ -25,6 +25,7 @@ export class VisualService {
     select?: VisualSelect;
     limit?: string;
   }) {
+    if (lastIndex) validateUUID(lastIndex);
     if (!isNumberString(limit)) {
       throw new BadRequestException('Limit must be a string number');
     }
@@ -147,7 +148,7 @@ export class VisualService {
   }
 
   async deleteComment({ id, userId }: { id: string; userId: string }) {
-    validateUUID(id);
+    verifyUUIDs([id, userId]);
     return this.prisma.visualComment.delete({
       where: { id, userId },
     });
