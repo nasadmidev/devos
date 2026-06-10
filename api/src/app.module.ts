@@ -9,6 +9,7 @@ import { HealthModule } from './health/health.module';
 import { JwtGuard } from './auth/jwt/jwt.guard';
 import { RolesGuard } from './auth/roles/role.guard';
 import { ProfileModule } from './profile/profile.module';
+import { VisualModule } from './visual/visual.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { ProfileModule } from './profile/profile.module';
     UserModule,
     HealthModule,
     ProfileModule,
+    VisualModule,
   ],
   providers: [
     {
