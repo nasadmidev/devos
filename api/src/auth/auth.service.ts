@@ -7,12 +7,12 @@ import { UserService } from '@/user/user.service';
 import { compare } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { AuthDTO } from './auth.dto';
-import { User } from '@/generated/prisma/client';
+import { Role, User } from '@/generated/prisma/client';
 import { TokenExpiredError, JsonWebTokenError } from '@nestjs/jwt';
 
 export type JwtPayload = {
   sub: string;
-  role: string;
+  role: Role;
   exp?: number;
   iat?: number;
 };

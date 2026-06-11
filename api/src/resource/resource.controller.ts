@@ -10,14 +10,18 @@ import {
   Query,
   Req,
 } from '@nestjs/common';
-import { VisualService } from './visual.service';
+import { ResourceService } from './resource.service';
+import { Public } from '@/auth/jwt/public.decorator';
 import {
-  CreateVisualCommentDTO,
-  CreateVisualDTO,
-  ListQueryVisualDTO,
-  SelectVisualQueryDTO,
-  UpdateVisualDTO,
-} from './visual.dto';
+  CreateResourceCommentDTO,
+  CreateResourceDTO,
+  ListResourceQueryDTO,
+  SelectResourceQueryDTO,
+  UpdateResourceDTO,
+} from './resource.dto';
+import { selectTransformer } from '@/common/transformers/select.transformer';
+import { UuidValidatorPipe } from '@/common/pipes/uuid-validator/uuid-validator.pipe';
+import type { RequestAuthorized } from '@/auth/auth.service';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -26,21 +30,18 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { Public } from '@/auth/jwt/public.decorator';
-import { UuidValidatorPipe } from '@/common/pipes/uuid-validator/uuid-validator.pipe';
-import type { RequestAuthorized } from '@/auth/auth.service';
-import { selectTransformer } from '@/common/transformers/select.transformer';
-import { VisualSelect } from '@/generated/prisma/models';
 
-@ApiTags('visual')
-@Controller('visual')
-export class VisualController {
-  constructor(private readonly visualService: VisualService) {}
+@ApiTags('resource')
+@Controller('resource')
+export class ResourceController {
+  constructor(private readonly service: ResourceService) {}
 
-  @Get('all')
-  @Public()
   @ApiOperation({
-    summary: 'Get all visuals ordered',
+    summary: 'Get all resources ordered by createdAt descendant',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Arrays of resources',
   })
   @ApiQuery({
     name: 'lastIndex',
@@ -60,31 +61,20 @@ export class VisualController {
     description: 'The fields you want to include on the request',
     example: `likes,author,reports,bookmarkedBy,comments`,
   })
-  @ApiResponse({
-    status: 200,
-    description: 'Get all visuals',
-  })
-  async getAllVisuals(@Query() query: ListQueryVisualDTO) {
-    const { lastIndex, limit } = query;
-    const select = query.select
-      ? selectTransformer<VisualSelect>(query.select)
-      : undefined;
-    return this.visualService.findAll({
-      lastIndex,
-      limit,
-      select,
-    });
+  @Get('all')
+  @Public()
+  async getAllResources(@Query() query: ListResourceQueryDTO) {
+    const select = query.select ? selectTransformer(query.select) : undefined;
+    return this.service.findAll({ ...query, select });
   }
 
-  @Get(':id')
-  @Public()
   @ApiOperation({
-    summary: 'Get one visual publication',
+    summary: 'Get one resource',
   })
   @ApiParam({
     name: 'id',
     required: true,
-    description: 'Visual id',
+    description: 'Resource id',
     example: '1c4493e0-62ff-4b16-a46e-153c9376567c',
   })
   @ApiQuery({
@@ -95,73 +85,77 @@ export class VisualController {
   })
   @ApiResponse({
     status: 200,
-    description: 'Visual with id obtained',
+    description: 'Resource with id obtained',
   })
-  async getOneVisual(
+  @Get(':id')
+  @Public()
+  async getResource(
     @Param('id', UuidValidatorPipe) id: string,
-    @Query() query: SelectVisualQueryDTO,
+    @Query() query: SelectResourceQueryDTO,
   ) {
-    const select = query.select
-      ? selectTransformer<VisualSelect>(query.select)
-      : undefined;
-    return this.visualService.findOne(id, select);
+    const select = query.select ? selectTransformer(query.select) : undefined;
+    return this.service.findOne(id, select);
   }
 
   @Post()
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({
-    summary: 'Create a new visual publication',
+    summary: 'Create a new resource publication',
   })
   @ApiResponse({
     status: 201,
-    description: 'Visual created',
+    description: 'Resource created',
   })
-  async createVisual(
+  async createResource(
     @Req() req: RequestAuthorized,
-    @Body() data: CreateVisualDTO,
+    @Body() data: CreateResourceDTO,
   ) {
-    return this.visualService.create(req.user.sub, data);
+    return this.service.create(req.user.sub, data);
   }
 
   @Put(':id')
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({
-    summary: 'Update a visual publication',
+    summary: 'Update a resource publication',
   })
   @ApiParam({
     name: 'id',
     required: true,
-    description: 'Visual id',
+    description: 'Resource id',
     example: '1c4493e0-62ff-4b16-a46e-153c9376567c',
   })
   @ApiResponse({
     status: 200,
-    description: 'Visual updated',
+    description: 'Resource updated',
   })
-  async updateVisual(
+  async updateResource(
     @Param('id', UuidValidatorPipe) id: string,
     @Req() req: RequestAuthorized,
-    @Body() data: UpdateVisualDTO,
+    @Body() data: UpdateResourceDTO,
   ) {
-    return this.visualService.update({ id, authorId: req.user.sub, data });
+    return this.service.update({ id, authorId: req.user.sub, data });
   }
 
   @Delete(':id')
   @ApiOperation({
-    summary: 'Delete a visual',
+    summary: 'Delete a resource',
   })
   @ApiBearerAuth('JWT-auth')
   @ApiParam({
     name: 'id',
     required: true,
-    description: 'Visual id',
+    description: 'Resource id',
     example: '1c4493e0-62ff-4b16-a46e-153c9376567c',
   })
-  async deleteVisual(
+  async deleteResource(
     @Param('id', UuidValidatorPipe) id: string,
     @Req() req: RequestAuthorized,
   ) {
-    return this.visualService.delete(id, req.user.sub);
+    return this.service.delete({
+      id,
+      authorId: req.user.sub,
+      role: req.user.role,
+    });
   }
 
   @Patch(':id/like')
@@ -172,7 +166,7 @@ export class VisualController {
   @ApiParam({
     name: 'id',
     required: true,
-    description: 'Visual id',
+    description: 'Resource id',
     example: '1c4493e0-62ff-4b16-a46e-153c9376567c',
   })
   @ApiResponse({
@@ -186,7 +180,7 @@ export class VisualController {
     @Req() req: RequestAuthorized,
   ) {
     return {
-      state: await this.visualService.toggleLike(id, req.user.sub),
+      state: await this.service.toggleLike(id, req.user.sub),
     };
   }
 
@@ -195,7 +189,7 @@ export class VisualController {
   @ApiParam({
     name: 'id',
     required: true,
-    description: 'Visual id',
+    description: 'Resource id',
     example: '1c4493e0-62ff-4b16-a46e-153c9376567c',
   })
   @ApiResponse({
@@ -209,7 +203,7 @@ export class VisualController {
     @Req() req: RequestAuthorized,
   ) {
     return {
-      state: await this.visualService.toggleBookmark(id, req.user.sub),
+      state: await this.service.toggleBookmark(id, req.user.sub),
     };
   }
 
@@ -218,7 +212,7 @@ export class VisualController {
   @ApiParam({
     name: 'id',
     required: true,
-    description: 'Visual id',
+    description: 'Resource id',
     example: '1c4493e0-62ff-4b16-a46e-153c9376567c',
   })
   @ApiResponse({
@@ -228,13 +222,9 @@ export class VisualController {
   async createComment(
     @Param('id', UuidValidatorPipe) id: string,
     @Req() req: RequestAuthorized,
-    @Body() data: CreateVisualCommentDTO,
+    @Body() data: CreateResourceCommentDTO,
   ) {
-    return this.visualService.comment({
-      visualId: id,
-      userId: req.user.sub,
-      data,
-    });
+    return this.service.comment({ resourceId: id, userId: req.user.sub, data });
   }
 
   @Delete('comments/:commentId')
@@ -253,9 +243,10 @@ export class VisualController {
     @Param('commentId', UuidValidatorPipe) commentId: string,
     @Req() req: RequestAuthorized,
   ) {
-    return this.visualService.deleteComment({
-      id: commentId,
+    return this.service.deleteComment({
+      commentId,
       userId: req.user.sub,
+      role: req.user.role,
     });
   }
 }
