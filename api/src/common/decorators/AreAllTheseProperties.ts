@@ -20,7 +20,9 @@ export function AreAllTheseProperties<T>(
               ? value.split(',').map((item) => item.trim())
               : value;
 
-          return valuesArray.every((value) => valuesArray.includes(value));
+          return valuesArray.every((value) =>
+            properties.includes(value as keyof T),
+          );
         },
         defaultMessage() {
           return `The field must contain at least one of the following parameters: ${properties.join(',')}`;
