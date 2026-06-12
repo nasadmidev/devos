@@ -2,7 +2,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ProfileService } from './profile.service';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { PrismaService } from '@/prisma/prisma.service';
-import { createProfile, profile, id, userId } from '@/__mocks__/profile/profile.mock';
+import {
+  createProfile,
+  profile,
+  id,
+  userId,
+} from '@/__mocks__/profile/profile.mock';
 import { InvalidUUIDException } from '@/common/exceptions/uuid-validator.exceptions';
 
 describe('ProfileService', () => {

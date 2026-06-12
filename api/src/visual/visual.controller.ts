@@ -12,7 +12,6 @@ import {
 } from '@nestjs/common';
 import { VisualService } from './visual.service';
 import {
-  CreateVisualCommentDTO,
   CreateVisualDTO,
   ListQueryVisualDTO,
   SelectVisualQueryDTO,
@@ -31,6 +30,7 @@ import { UuidValidatorPipe } from '@/common/pipes/uuid-validator/uuid-validator.
 import type { RequestAuthorized } from '@/auth/auth.service';
 import { selectTransformer } from '@/common/transformers/select.transformer';
 import { VisualSelect } from '@/generated/prisma/models';
+import { CreateCommentDTO } from '@/common/dtos/comment.dto';
 
 @ApiTags('visual')
 @Controller('visual')
@@ -229,7 +229,7 @@ export class VisualController {
   async createComment(
     @Param('id', UuidValidatorPipe) id: string,
     @Req() req: RequestAuthorized,
-    @Body() data: CreateVisualCommentDTO,
+    @Body() data: CreateCommentDTO,
   ) {
     return this.visualService.comment({
       visualId: id,
@@ -256,7 +256,8 @@ export class VisualController {
   ) {
     return this.visualService.deleteComment({
       id: commentId,
-      userId: req.user.sub,
+      authorId: req.user.sub,
+      role: 'USER',
     });
   }
 }

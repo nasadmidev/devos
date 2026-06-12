@@ -292,7 +292,11 @@ describe('VisualService', () => {
   describe('deleteComment', () => {
     it('should delete a comment', async () => {
       prismaMock.visualComment.delete.mockResolvedValue(visualCommentMock);
-      const result = await service.deleteComment({ id, userId: authorId });
+      const result = await service.deleteComment({
+        id,
+        authorId,
+        role: 'USER',
+      });
       expect(result).toEqual(visualCommentMock);
       expect(prismaMock.visualComment.delete).toHaveBeenCalledWith({
         where: { id, userId: authorId },
@@ -303,7 +307,8 @@ describe('VisualService', () => {
       await expect(
         service.deleteComment({
           id: 'invalid-uuid',
-          userId: authorId,
+          authorId,
+          role: 'USER',
         }),
       ).rejects.toThrow(InvalidUUIDException);
     });
@@ -312,7 +317,8 @@ describe('VisualService', () => {
       await expect(
         service.deleteComment({
           id: id,
-          userId: 'invalid-uuid',
+          authorId: 'invalid-uuid',
+          role: 'USER',
         }),
       ).rejects.toThrow(InvalidUUIDException);
     });

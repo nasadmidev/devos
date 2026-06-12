@@ -188,7 +188,8 @@ describe('VisualController', () => {
     expect(result).toEqual(visualCommentMock);
     expect(serviceMock.deleteComment).toHaveBeenCalledWith({
       id,
-      userId: requestAuthorizedMock.user.sub,
+      authorId: requestAuthorizedMock.user.sub,
+      role: requestAuthorizedMock.user.role,
     });
   });
 });

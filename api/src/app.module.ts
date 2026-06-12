@@ -12,6 +12,7 @@ import { ProfileModule } from './profile/profile.module';
 import { VisualModule } from './visual/visual.module';
 import { ResourceModule } from './resource/resource.module';
 import { DoubtModule } from './doubt/doubt.module';
+import { AnswerModule } from './answer/answer.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { DoubtModule } from './doubt/doubt.module';
     VisualModule,
     ResourceModule,
     DoubtModule,
+    AnswerModule,
   ],
   providers: [
     {

@@ -336,8 +336,8 @@ describe('ResourceService', () => {
     it('should delete a comment for user role', async () => {
       prismaMock.resourceComment.delete.mockResolvedValue(resourceCommentMock);
       const result = await service.deleteComment({
-        commentId: resourceCommentMock.id,
-        userId: userId,
+        id: resourceCommentMock.id,
+        authorId: userId,
         role: 'USER',
       });
       expect(result).toEqual(resourceCommentMock);
@@ -349,8 +349,8 @@ describe('ResourceService', () => {
     it('should delete a comment for admin role', async () => {
       prismaMock.resourceComment.delete.mockResolvedValue(resourceCommentMock);
       const result = await service.deleteComment({
-        commentId: resourceCommentMock.id,
-        userId: userId,
+        id: resourceCommentMock.id,
+        authorId: userId,
         role: 'ADMIN',
       });
       expect(result).toEqual(resourceCommentMock);
@@ -362,8 +362,8 @@ describe('ResourceService', () => {
     it('should throw InvalidUUIDException on invalid comment id', async () => {
       await expect(
         service.deleteComment({
-          commentId: 'invalid-uuid',
-          userId: userId,
+          id: 'invalid-uuid',
+          authorId: userId,
           role: 'USER',
         }),
       ).rejects.toThrow(InvalidUUIDException);
@@ -372,8 +372,8 @@ describe('ResourceService', () => {
     it('should throw InvalidUUIDException on invalid userId', async () => {
       await expect(
         service.deleteComment({
-          commentId: resourceCommentMock.id,
-          userId: 'invalid-uuid',
+          id: resourceCommentMock.id,
+          authorId: 'invalid-uuid',
           role: 'USER',
         }),
       ).rejects.toThrow(InvalidUUIDException);

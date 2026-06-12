@@ -79,9 +79,7 @@ describe('AuthService', () => {
         password: 'wrong-password',
       });
       expect(result).toBeNull();
-      expect(userMockService.findOneByEmail).toHaveBeenCalledWith(
-        'test-user',
-      );
+      expect(userMockService.findOneByEmail).toHaveBeenCalledWith('test-user');
       expect(spy).toHaveBeenCalledWith('wrong-password', 'hashed-password');
     });
   });

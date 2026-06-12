@@ -190,8 +190,8 @@ describe('ResourceController', () => {
     );
     expect(result).toEqual(resourceCommentMock);
     expect(serviceMock.deleteComment).toHaveBeenCalledWith({
-      commentId: resourceCommentMock.id,
-      userId: requestAuthorizedMock.user.sub,
+      id: resourceCommentMock.id,
+      authorId: requestAuthorizedMock.user.sub,
       role: requestAuthorizedMock.user.role,
     });
   });

@@ -1,12 +1,7 @@
 import { AreAllTheseProperties } from '@/common/decorators/AreAllTheseProperties';
 import { QueryListDTO } from '@/common/types/queryList.common.interface';
 import { VisualSelect } from '@/generated/prisma/models';
-import {
-  ApiProperty,
-  ApiPropertyOptional,
-  PartialType,
-  PickType,
-} from '@nestjs/swagger';
+import { ApiProperty, PartialType, PickType } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {
   IsArray,
@@ -49,28 +44,6 @@ export class CreateVisualDTO {
   @IsNotEmpty()
   @MaxLength(1000)
   description!: string;
-}
-
-export class CreateVisualCommentDTO {
-  @ApiPropertyOptional({
-    name: 'parentId',
-    description: 'Parent comment id reference',
-    type: 'string',
-  })
-  @IsOptional()
-  @IsUUID('4')
-  parentId?: string;
-
-  @ApiProperty({
-    name: 'content',
-    description: 'Comment content',
-    type: 'string',
-    maxLength: 500,
-  })
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(500)
-  content!: string;
 }
 
 export class ListQueryVisualDTO implements QueryListDTO<VisualSelect> {

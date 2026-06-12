@@ -58,31 +58,6 @@ export class CreateResourceDTO {
 
 export class UpdateResourceDTO extends PartialType(CreateResourceDTO) {}
 
-export class CreateResourceCommentDTO {
-  @ApiPropertyOptional({
-    name: 'parentId',
-    description: 'ID of the parent comment',
-    type: 'string',
-    example: '1c4493e0-62ff-4b16-a46e-153c9376567c',
-    required: false,
-  })
-  @IsOptional()
-  @IsUUID('4')
-  parentId?: string;
-
-  @ApiProperty({
-    name: 'content',
-    description: 'Comment content',
-    type: 'string',
-    maxLength: 500,
-    required: true,
-  })
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(500)
-  content!: string;
-}
-
 export class ListResourceQueryDTO implements QueryListDTO<ResourceSelect> {
   @IsOptional()
   @IsUUID('4')

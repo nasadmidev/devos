@@ -6,11 +6,8 @@ import { VisualSelect } from '@/generated/prisma/models';
 import { PrismaService } from '@/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { isNumberString } from 'class-validator';
-import {
-  CreateVisualCommentDTO,
-  CreateVisualDTO,
-  UpdateVisualDTO,
-} from './visual.dto';
+import { CreateVisualDTO, UpdateVisualDTO } from './visual.dto';
+import { CreateCommentDTO } from '@/common/dtos/comment.dto';
 import {
   DeleteArguments,
   FindAllArguments,
@@ -140,7 +137,7 @@ export class VisualService {
   }: {
     visualId: string;
     userId: string;
-    data: CreateVisualCommentDTO;
+    data: CreateCommentDTO;
   }) {
     verifyUUIDs([visualId, userId]);
     return this.prisma.visualComment.create({
@@ -148,10 +145,14 @@ export class VisualService {
     });
   }
 
-  async deleteComment({ id, userId }: { id: string; userId: string }) {
-    verifyUUIDs([id, userId]);
+  async deleteComment({
+    id: commentId,
+    authorId: userId,
+    role,
+  }: DeleteArguments) {
+    verifyUUIDs([commentId, userId]);
     return this.prisma.visualComment.delete({
-      where: { id, userId },
+      where: { id: commentId, ...(role === 'USER' ? { userId } : {}) },
     });
   }
 }

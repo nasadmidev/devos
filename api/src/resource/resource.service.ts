@@ -6,12 +6,8 @@ import { ResourceSelect } from '@/generated/prisma/models';
 import { PrismaService } from '@/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { isNumberString } from 'class-validator';
-import {
-  CreateResourceCommentDTO,
-  CreateResourceDTO,
-  UpdateResourceDTO,
-} from './resource.dto';
-import { Role } from '@/generated/prisma/enums';
+import { CreateResourceDTO, UpdateResourceDTO } from './resource.dto';
+import { CreateCommentDTO } from '@/common/dtos/comment.dto';
 import {
   DeleteArguments,
   FindAllArguments,
@@ -141,7 +137,7 @@ export class ResourceService {
   }: {
     resourceId: string;
     userId: string;
-    data: CreateResourceCommentDTO;
+    data: CreateCommentDTO;
   }) {
     verifyUUIDs([resourceId, userId]);
     return this.prisma.resourceComment.create({
@@ -150,14 +146,10 @@ export class ResourceService {
   }
 
   async deleteComment({
-    commentId,
-    userId,
+    id: commentId,
+    authorId: userId,
     role,
-  }: {
-    commentId: string;
-    userId: string;
-    role: Role;
-  }) {
+  }: DeleteArguments) {
     verifyUUIDs([commentId, userId]);
     return this.prisma.resourceComment.delete({
       where: { id: commentId, ...(role === 'USER' ? { userId } : {}) },

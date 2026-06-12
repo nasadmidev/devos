@@ -1,4 +1,7 @@
 {
   "js/ts.preferences.quoteStyle": "single",
-  "editor.tabSize": 2
+  "editor.tabSize": 2,
+  "cSpell.words": [
+    "dtos"
+  ]
 }

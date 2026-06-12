@@ -13,7 +13,6 @@ import {
 import { ResourceService } from './resource.service';
 import { Public } from '@/auth/jwt/public.decorator';
 import {
-  CreateResourceCommentDTO,
   CreateResourceDTO,
   ListResourceQueryDTO,
   SelectResourceQueryDTO,
@@ -30,6 +29,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { CreateCommentDTO } from '@/common/dtos/comment.dto';
 
 @ApiTags('resource')
 @Controller('resource')
@@ -222,7 +222,7 @@ export class ResourceController {
   async createComment(
     @Param('id', UuidValidatorPipe) id: string,
     @Req() req: RequestAuthorized,
-    @Body() data: CreateResourceCommentDTO,
+    @Body() data: CreateCommentDTO,
   ) {
     return this.service.comment({ resourceId: id, userId: req.user.sub, data });
   }
@@ -244,8 +244,8 @@ export class ResourceController {
     @Req() req: RequestAuthorized,
   ) {
     return this.service.deleteComment({
-      commentId,
-      userId: req.user.sub,
+      id: commentId,
+      authorId: req.user.sub,
       role: req.user.role,
     });
   }
