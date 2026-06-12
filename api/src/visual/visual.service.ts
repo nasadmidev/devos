@@ -11,7 +11,10 @@ import {
   CreateVisualDTO,
   UpdateVisualDTO,
 } from './visual.dto';
-import { FindAllArguments } from '@/common/types/service.common.arguments';
+import {
+  DeleteArguments,
+  FindAllArguments,
+} from '@/common/types/service.common.arguments';
 import { InvalidNumberStingException } from '@/common/exceptions/invalid-number-string.exceptions';
 
 @Injectable()
@@ -84,10 +87,10 @@ export class VisualService {
     });
   }
 
-  async delete(id: string, authorId: string) {
+  async delete({ id, authorId, role }: DeleteArguments) {
     verifyUUIDs([id, authorId]);
     return this.prisma.visual.delete({
-      where: { id, authorId },
+      where: { id, ...(role === 'USER' ? { authorId } : {}) },
     });
   }
 

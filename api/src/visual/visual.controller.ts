@@ -161,7 +161,8 @@ export class VisualController {
     @Param('id', UuidValidatorPipe) id: string,
     @Req() req: RequestAuthorized,
   ) {
-    return this.visualService.delete(id, req.user.sub);
+    const { role, sub } = req.user;
+    return this.visualService.delete({ id, authorId: sub, role });
   }
 
   @Patch(':id/like')

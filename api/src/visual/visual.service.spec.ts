@@ -146,23 +146,37 @@ describe('VisualService', () => {
   describe('delete', () => {
     it('should delete visual', async () => {
       prismaMock.visual.delete.mockResolvedValue(visualMock);
-      const result = await service.delete(id, authorId);
+      const result = await service.delete({ id, authorId, role: 'USER' });
       expect(result).toEqual(visualMock);
       expect(prismaMock.visual.delete).toHaveBeenCalledWith({
-        where: { id, authorId },
+        where: {
+          id,
+          authorId: authorId,
+        },
+      });
+    });
+
+    it('should delete visual as administrator', async () => {
+      prismaMock.visual.delete.mockResolvedValue(visualMock);
+      const result = await service.delete({ id, authorId, role: 'ADMIN' });
+      expect(result).toEqual(visualMock);
+      expect(prismaMock.visual.delete).toHaveBeenCalledWith({
+        where: {
+          id,
+        },
       });
     });
 
     it('should throw InvalidUUIDException on invalid authorId', async () => {
-      await expect(service.delete(id, 'invalid-uuid')).rejects.toThrow(
-        InvalidUUIDException,
-      );
+      await expect(
+        service.delete({ id, authorId: 'invalid-uuid', role: 'USER' }),
+      ).rejects.toThrow(InvalidUUIDException);
     });
 
     it('should throw InvalidUUIDException on invalid visualId', async () => {
-      await expect(service.delete('invalid-uuid', authorId)).rejects.toThrow(
-        InvalidUUIDException,
-      );
+      await expect(
+        service.delete({ id: 'invalid-uuid', authorId, role: 'USER' }),
+      ).rejects.toThrow(InvalidUUIDException);
     });
   });
 

@@ -116,10 +116,11 @@ describe('VisualController', () => {
     serviceMock.delete.mockResolvedValue(visualMock);
     const result = await controller.deleteVisual(id, requestAuthorizedMock);
     expect(result).toEqual(visualMock);
-    expect(serviceMock.delete).toHaveBeenCalledWith(
+    expect(serviceMock.delete).toHaveBeenCalledWith({
       id,
-      requestAuthorizedMock.user.sub,
-    );
+      authorId: requestAuthorizedMock.user.sub,
+      role: requestAuthorizedMock.user.role,
+    });
   });
 
   describe('toggleLike', () => {
