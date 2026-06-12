@@ -1,5 +1,9 @@
 import { PrismaService } from '@/prisma/prisma.service';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateAnswerDTO } from './answer.dto';
 import { verifyUUIDs } from '@/common/pipes/uuid-validator/uuid-validator.pipe';
 import { Role } from '@/generated/prisma/enums';
@@ -10,7 +14,7 @@ import { CreateCommentDTO } from '@/common/dtos/comment.dto';
 export class AnswerService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createAnswer({
+  async create({
     doubtId,
     userId,
     data,
@@ -23,7 +27,7 @@ export class AnswerService {
     return this.prisma.answer.create({ data: { ...data, doubtId, userId } });
   }
 
-  async toggleAnswer({
+  async toggleCorrect({
     id,
     userId,
     role,
@@ -45,11 +49,37 @@ export class AnswerService {
     return !answer.correct ? 'correct' : 'incorrect';
   }
 
-  async deleteAnswer({ id, authorId: userId, role }: DeleteArguments) {
+  async delete({ id, authorId: userId, role }: DeleteArguments) {
     verifyUUIDs([id, userId]);
-    return await this.prisma.answer.delete({
-      where: { id, ...(role === 'USER' ? { userId } : {}) },
+    const answer = await this.prisma.answer.findUnique({
+      where: { id },
+      select: {
+        userId: true,
+        doubt: true,
+      },
     });
+
+    if (!answer) {
+      throw new NotFoundException('Answer not found');
+    }
+
+    if (answer.userId === userId) {
+      return await this.prisma.answer.delete({ where: { id, userId } });
+    }
+
+    if (answer.doubt.authorId === userId) {
+      return await this.prisma.answer.delete({
+        where: { id, doubt: { authorId: userId } },
+      });
+    }
+
+    if (role === 'ADMIN') {
+      return await this.prisma.answer.delete({ where: { id } });
+    }
+
+    throw new ForbiddenException(
+      'You must be admin, answer or doubt creator to perform this action.',
+    );
   }
 
   async comment({

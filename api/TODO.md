@@ -3,6 +3,8 @@
 - [ ] Messages and notification with Redis
 - [x] Make admin capable of delete visual publications
 - [x] Answer provider
+- [x] Document Doubt and Answer DTOS/Controller
+- [ ] Testing Doubt and Answer module
 
 # Fixes
 1. Google OAuth with name parameter could be duplicated
