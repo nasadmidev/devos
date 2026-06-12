@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { VisualService } from './visual.service';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { PrismaService } from '@/prisma/prisma.service';
-import { BadRequestException } from '@nestjs/common';
 import {
   authorId,
   createVisualMock,
@@ -16,6 +15,7 @@ import {
   visualCommentMock,
   visualLikeMock,
 } from '@/__mocks__/visual/visualInteractions.mock';
+import { InvalidNumberStingException } from '@/common/exceptions/invalid-number-string.exceptions';
 
 describe('VisualService', () => {
   let service: VisualService;
@@ -54,9 +54,9 @@ describe('VisualService', () => {
       });
     });
 
-    it('should throw BadRequestException on invalid limit type', async () => {
+    it('should throw InvalidNumberStringException on invalid limit type', async () => {
       await expect(service.findAll({ limit: 's' })).rejects.toThrow(
-        BadRequestException,
+        InvalidNumberStingException,
       );
     });
 

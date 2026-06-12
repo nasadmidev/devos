@@ -11,6 +11,7 @@ import { RolesGuard } from './auth/roles/role.guard';
 import { ProfileModule } from './profile/profile.module';
 import { VisualModule } from './visual/visual.module';
 import { ResourceModule } from './resource/resource.module';
+import { DoubtModule } from './doubt/doubt.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { ResourceModule } from './resource/resource.module';
     ProfileModule,
     VisualModule,
     ResourceModule,
+    DoubtModule,
   ],
   providers: [
     {

@@ -4,13 +4,15 @@ import {
 } from '@/common/pipes/uuid-validator/uuid-validator.pipe';
 import { VisualSelect } from '@/generated/prisma/models';
 import { PrismaService } from '@/prisma/prisma.service';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { isNumberString } from 'class-validator';
 import {
   CreateVisualCommentDTO,
   CreateVisualDTO,
   UpdateVisualDTO,
 } from './visual.dto';
+import { FindAllArguments } from '@/common/types/service.common.arguments';
+import { InvalidNumberStingException } from '@/common/exceptions/invalid-number-string.exceptions';
 
 @Injectable()
 export class VisualService {
@@ -20,14 +22,10 @@ export class VisualService {
     lastIndex,
     select,
     limit = '50',
-  }: {
-    lastIndex?: string;
-    select?: VisualSelect;
-    limit?: string;
-  }) {
+  }: FindAllArguments<VisualSelect>) {
     if (lastIndex) validateUUID(lastIndex);
     if (!isNumberString(limit)) {
-      throw new BadRequestException('Limit must be a string number');
+      throw new InvalidNumberStingException('limit');
     }
 
     return this.prisma.visual.findMany({

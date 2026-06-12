@@ -4,7 +4,7 @@ import {
 } from '@/common/pipes/uuid-validator/uuid-validator.pipe';
 import { ResourceSelect } from '@/generated/prisma/models';
 import { PrismaService } from '@/prisma/prisma.service';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { isNumberString } from 'class-validator';
 import {
   CreateResourceCommentDTO,
@@ -12,6 +12,12 @@ import {
   UpdateResourceDTO,
 } from './resource.dto';
 import { Role } from '@/generated/prisma/enums';
+import {
+  DeleteArguments,
+  FindAllArguments,
+  UpdateArguments,
+} from '@/common/types/service.common.arguments';
+import { InvalidNumberStingException } from '@/common/exceptions/invalid-number-string.exceptions';
 
 @Injectable()
 export class ResourceService {
@@ -21,14 +27,10 @@ export class ResourceService {
     lastIndex,
     limit = '50',
     select,
-  }: {
-    lastIndex?: string;
-    limit?: string;
-    select?: ResourceSelect;
-  }) {
+  }: FindAllArguments<ResourceSelect>) {
     if (lastIndex) validateUUID(lastIndex);
     if (!isNumberString(limit)) {
-      throw new BadRequestException('Limit must be a number string');
+      throw new InvalidNumberStingException('limit');
     }
     return this.prisma.resource.findMany({
       take: parseInt(limit),
@@ -64,15 +66,7 @@ export class ResourceService {
     return this.prisma.resource.create({ data: { ...data, authorId } });
   }
 
-  async update({
-    id,
-    authorId,
-    data,
-  }: {
-    id: string;
-    authorId: string;
-    data: UpdateResourceDTO;
-  }) {
+  async update({ id, authorId, data }: UpdateArguments<UpdateResourceDTO>) {
     verifyUUIDs([id, authorId]);
     return this.prisma.resource.update({
       where: { id, authorId },
@@ -80,15 +74,7 @@ export class ResourceService {
     });
   }
 
-  async delete({
-    id,
-    authorId,
-    role,
-  }: {
-    id: string;
-    authorId: string;
-    role: Role;
-  }) {
+  async delete({ id, authorId, role }: DeleteArguments) {
     verifyUUIDs([id, authorId]);
     return this.prisma.resource.delete({
       where: {

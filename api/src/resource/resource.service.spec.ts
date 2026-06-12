@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ResourceService } from './resource.service';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { PrismaService } from '@/prisma/prisma.service';
-import { BadRequestException } from '@nestjs/common';
 import {
   authorId,
   createResourceMock,
@@ -16,6 +15,7 @@ import {
   ResourceComment,
   ResourceLike,
 } from '@/generated/prisma/client';
+import { InvalidNumberStingException } from '@/common/exceptions/invalid-number-string.exceptions';
 
 const userId = authorId;
 const resourceId = id;
@@ -83,9 +83,9 @@ describe('ResourceService', () => {
       });
     });
 
-    it('should throw BadRequestException on invalid limit type', async () => {
+    it('should throw InvalidNumberStringException on invalid limit type', async () => {
       await expect(service.findAll({ limit: 's' })).rejects.toThrow(
-        BadRequestException,
+        InvalidNumberStingException,
       );
     });
 

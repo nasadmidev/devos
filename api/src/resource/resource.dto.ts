@@ -1,4 +1,5 @@
 import { AreAllTheseProperties } from '@/common/decorators/AreAllTheseProperties';
+import { QueryListDTO } from '@/common/types/queryList.common.interface';
 import { ResourceSelect } from '@/generated/prisma/models';
 import {
   ApiProperty,
@@ -82,7 +83,7 @@ export class CreateResourceCommentDTO {
   content!: string;
 }
 
-export class ListResourceQueryDTO {
+export class ListResourceQueryDTO implements QueryListDTO<ResourceSelect> {
   @IsOptional()
   @IsUUID('4')
   lastIndex?: string;

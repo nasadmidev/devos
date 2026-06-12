@@ -1,4 +1,5 @@
 import { AreAllTheseProperties } from '@/common/decorators/AreAllTheseProperties';
+import { QueryListDTO } from '@/common/types/queryList.common.interface';
 import { VisualSelect } from '@/generated/prisma/models';
 import {
   ApiProperty,
@@ -72,7 +73,7 @@ export class CreateVisualCommentDTO {
   content!: string;
 }
 
-export class ListQueryVisualDTO {
+export class ListQueryVisualDTO implements QueryListDTO<VisualSelect> {
   @IsOptional()
   @IsUUID('4')
   lastIndex?: string;
