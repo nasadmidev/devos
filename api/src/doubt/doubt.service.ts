@@ -42,6 +42,9 @@ export class DoubtService {
             skip: 1,
           }
         : {}),
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
   }
 

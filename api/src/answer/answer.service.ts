@@ -63,6 +63,10 @@ export class AnswerService {
       throw new NotFoundException('Answer not found');
     }
 
+    if (role === 'ADMIN') {
+      return await this.prisma.answer.delete({ where: { id } });
+    }
+
     if (answer.userId === userId) {
       return await this.prisma.answer.delete({ where: { id, userId } });
     }
@@ -71,10 +75,6 @@ export class AnswerService {
       return await this.prisma.answer.delete({
         where: { id, doubt: { authorId: userId } },
       });
-    }
-
-    if (role === 'ADMIN') {
-      return await this.prisma.answer.delete({ where: { id } });
     }
 
     throw new ForbiddenException(
@@ -91,6 +91,7 @@ export class AnswerService {
     userId: string;
     data: CreateCommentDTO;
   }) {
+    verifyUUIDs([answerId, userId]);
     return this.prisma.answerComment.create({
       data: { ...data, answerId, userId },
     });

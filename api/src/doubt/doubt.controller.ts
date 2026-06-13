@@ -143,11 +143,13 @@ export class DoubtController {
     @Req() req: RequestAuthorized,
   ) {
     const { sub, role } = req.user;
-    return this.answerService.toggleCorrect({
-      id: answerId,
-      userId: sub,
-      role,
-    });
+    return {
+      markAs: await this.answerService.toggleCorrect({
+        id: answerId,
+        userId: sub,
+        role,
+      }),
+    };
   }
 
   @ApiOperation({
