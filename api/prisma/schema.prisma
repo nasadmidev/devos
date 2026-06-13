@@ -228,12 +228,19 @@ enum ReportType {
   OTHER
 }
 
+enum ResolutionType {
+  ARCHIVED
+  BANNED
+  WAITING
+}
+
 model UserReport {
-  id         String     @id @default(uuid()) @db.Uuid
-  fromUserId String     @db.Uuid
-  toUserId   String     @db.Uuid
-  type       ReportType @default(OTHER)
-  reason     String     @db.Text
+  id         String         @id @default(uuid()) @db.Uuid
+  fromUserId String         @db.Uuid
+  toUserId   String         @db.Uuid
+  type       ReportType     @default(OTHER)
+  reason     String         @db.Text
+  resolution ResolutionType @default(WAITING)
 
   fromUser User @relation("FromUserReports", fields: [fromUserId], references: [id], onDelete: Cascade)
   toUser   User @relation("ToUserReports", fields: [toUserId], references: [id], onDelete: Cascade)
@@ -242,11 +249,12 @@ model UserReport {
 }
 
 model VisualReport {
-  id       String     @id @default(uuid()) @db.Uuid
-  userId   String     @db.Uuid
-  visualId String     @db.Uuid
-  type     ReportType @default(OTHER)
-  reason   String     @db.Text
+  id         String         @id @default(uuid()) @db.Uuid
+  userId     String         @db.Uuid
+  visualId   String         @db.Uuid
+  type       ReportType     @default(OTHER)
+  reason     String         @db.Text
+  resolution ResolutionType @default(WAITING)
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   visual Visual @relation(fields: [visualId], references: [id], onDelete: Cascade)
@@ -255,11 +263,12 @@ model VisualReport {
 }
 
 model ResourceReport {
-  id         String     @id @default(uuid()) @db.Uuid
-  userId     String     @db.Uuid
-  resourceId String     @db.Uuid
-  type       ReportType @default(OTHER)
-  reason     String     @db.Text
+  id         String         @id @default(uuid()) @db.Uuid
+  userId     String         @db.Uuid
+  resourceId String         @db.Uuid
+  type       ReportType     @default(OTHER)
+  reason     String         @db.Text
+  resolution ResolutionType @default(WAITING)
 
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   resource Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
@@ -268,11 +277,12 @@ model ResourceReport {
 }
 
 model DoubtReport {
-  id      String     @id @default(uuid()) @db.Uuid
-  userId  String     @db.Uuid
-  doubtId String     @db.Uuid
-  type    ReportType @default(OTHER)
-  reason  String     @db.Text
+  id         String         @id @default(uuid()) @db.Uuid
+  userId     String         @db.Uuid
+  doubtId    String         @db.Uuid
+  type       ReportType     @default(OTHER)
+  reason     String         @db.Text
+  resolution ResolutionType @default(WAITING)
 
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
   doubt Doubt @relation(fields: [doubtId], references: [id], onDelete: Cascade)
