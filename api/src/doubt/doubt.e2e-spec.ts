@@ -16,6 +16,7 @@ import { JwtPayload } from '@/auth/auth.service';
 import { PrismaModule } from '@/prisma/prisma.module';
 import ms from 'ms';
 import { randomUUID } from 'crypto';
+import toIso from '@/__mocks__/common/toIso.util';
 
 process.env.JWT_SECRET = 'secret';
 process.env.JWT_EXPIRES = '1h';
@@ -109,15 +110,6 @@ describe('DoubtController (e2e)', () => {
     await prismaService.$connect();
     await app.init();
   });
-
-  const toIso = <T>(obj: T, keys: Array<keyof T>) => {
-    for (const k of keys) {
-      if (obj[k] instanceof Date) {
-        obj[k as string] = obj[k].toISOString();
-      }
-    }
-    return obj;
-  };
 
   beforeEach(() => {
     req = request(app.getHttpServer() as Server);

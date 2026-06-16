@@ -63,3 +63,39 @@
   - [x] 200: should delete the doubt if requested by the author
   - [x] 200: should delete the doubt if requested by an ADMIN
   - [x] 404: should fail to delete the doubt if requested by another user
+
+# 📋 Report e2e
+
+- POST /report
+  - [x] `201: should create a report for a DOUBT entity`
+  - [x] `201: should create a report for a USER entity (toUserId)`
+  - [x] `401: should fail to create a report if unauthorized (no token)`
+  - [x] `400: should fail to create a report with invalid UUID in entityId`
+  - [x] `400: should fail if entityType is not a valid enum value`
+
+- GET /report/all
+  - [x] `200: should get all reports from all entities mixed chronologically`
+  - [x] `200: should get all reports filtered by fromEntity (e.g., only DOUBT)`
+  - [x] `200: should get all reports filtered by state (e.g., PENDING)`
+  - [x] `200: should paginate correctly using lastIndex and lastIndexType`
+  - [x] `403: should fail to get all reports if requested by a standard USER`
+  - [x] `400: should fail if fromEntity query parameter is invalid`
+
+- GET /report/:id
+  - [x] `200: should get a single report by id providing the correct fromEntity`
+  - [x] `200: should get a single report applying dynamic select projection`
+  - [x] `400: should fail if fromEntity query parameter is missing`
+  - [x] `403: should fail to get the report if requested by a standard USER`
+  - [x] `404: should return not found if the report id does not exist in that entity`
+
+-  PATCH /report/:id/resolve
+  - [x] `200: should resolve a report changing its status and resolution details`
+  - [x] `400: should fail to resolve if fromEntity is missing or invalid`
+  - [x] `403: should fail to resolve the report if requested by a standard USER`
+  - [x] `404: should return not found if trying to resolve a non-existent report`
+
+- DELETE /report/:id
+  - [x] `200: should permanently delete the report record`
+  - [x] `400: should fail to delete if fromEntity query parameter is missing`
+  - [x] `403: should fail to delete the report if requested by a standard USER`
+  - [x] `404: should return not found if the report id does not exist`

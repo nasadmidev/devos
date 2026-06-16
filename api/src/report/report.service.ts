@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import {
   CreateReportDTO,
   EntityType,
@@ -43,10 +43,19 @@ export class ReportService {
       },
       {
         data: {
-          ...(entityType === EntityType.USER && { toUserId: entityId }),
-          ...(entityType === EntityType.VISUAL && { visualId: entityId }),
-          ...(entityType === EntityType.RESOURCE && { resourceId: entityId }),
-          ...(entityType === EntityType.DOUBT && { doubtId: entityId }),
+          ...(entityType === EntityType.USER && {
+            toUserId: entityId,
+            fromUserId: userId,
+          }),
+          ...(entityType === EntityType.VISUAL && {
+            visualId: entityId,
+            userId,
+          }),
+          ...(entityType === EntityType.RESOURCE && {
+            resourceId: entityId,
+            userId,
+          }),
+          ...(entityType === EntityType.DOUBT && { doubtId: entityId, userId }),
           reason,
           type,
         },
@@ -62,6 +71,7 @@ export class ReportService {
     fromEntity,
     select,
   }: Omit<ListAllReportsQueryDTO, 'select'> & { select?: ReportSelect }) {
+    if (lastIndex) validateUUID(lastIndex);
     const parsedLimit = parseInt(limit, 10);
     const commonSelect = {
       id: true,
@@ -93,6 +103,11 @@ export class ReportService {
         },
       );
     } else {
+      if (lastIndex && !lastIndexType) {
+        throw new BadRequestException(
+          'If lastIndex is defined, lastIndexType must be defined',
+        );
+      }
       const findArguments = (type: EntityType) => ({
         ...baseArgs,
         ...(lastIndex && lastIndexType === type

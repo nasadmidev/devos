@@ -16,5 +16,7 @@ export class FromEntityPipe implements PipeTransform {
         `fromEntity must be one of the following values: ${Object.keys(EntityType).join(',')}`,
       );
     }
+
+    return value;
   }
 }
