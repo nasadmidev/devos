@@ -1,7 +1,12 @@
 import { AreAllTheseProperties } from '@/common/decorators/AreAllTheseProperties';
 import { QueryListDTO } from '@/common/types/queryList.common.interface';
 import { DoubtSelect } from '@/generated/prisma/models';
-import { PartialType, PickType } from '@nestjs/swagger';
+import {
+  ApiProperty,
+  ApiPropertyOptional,
+  PartialType,
+  PickType,
+} from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {
   ArrayMaxSize,
@@ -16,21 +21,47 @@ import {
 } from 'class-validator';
 
 export class CreateDoubtDTO {
+  @ApiProperty({
+    name: 'title',
+    description: 'doubt title',
+    maxLength: 255,
+    required: true,
+    type: 'string',
+  })
   @IsString()
   @IsNotEmpty()
   @MaxLength(255)
   title!: string;
 
+  @ApiProperty({
+    name: 'description',
+    description: 'doubt description',
+    maxLength: 1000,
+    required: true,
+    type: 'string',
+  })
   @IsString()
   @IsNotEmpty()
   @MaxLength(1000)
   description!: string;
 
+  @ApiPropertyOptional({
+    name: 'code',
+    description: 'attached code to the doubt',
+    required: false,
+    type: 'string',
+  })
   @IsOptional()
   @IsString()
   @IsNotEmpty()
   code?: string;
 
+  @ApiProperty({
+    name: 'tags',
+    type: 'array',
+    description: 'attached tags to the doubt',
+    example: '[javascript,typescript]',
+  })
   @IsArray()
   @ArrayMaxSize(5)
   @ArrayUnique()

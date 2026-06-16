@@ -13,6 +13,7 @@ import { VisualModule } from './visual/visual.module';
 import { ResourceModule } from './resource/resource.module';
 import { DoubtModule } from './doubt/doubt.module';
 import { AnswerModule } from './answer/answer.module';
+import { ReportModule } from './report/report.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { AnswerModule } from './answer/answer.module';
     ResourceModule,
     DoubtModule,
     AnswerModule,
+    ReportModule,
   ],
   providers: [
     {
