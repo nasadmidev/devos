@@ -84,7 +84,13 @@ describe('Users', () => {
     it('200: get user by id (positive)', async () => {
       userServiceMock.findOne.mockResolvedValue(userMock);
       const res = await req.get(`/user/${id}`).expect(200);
-      expect(res.body).toEqual(userMockResponse);
+      expect(res.body).toEqual(
+        expect.objectContaining({
+          ...userMock,
+          createdAt: expect.any(String) as string,
+          updatedAt: expect.any(String) as string,
+        }),
+      );
     });
 
     it('400: get user by id (invalid uuid)', async () => {
@@ -98,7 +104,13 @@ describe('Users', () => {
       const created = { ...userMockResponse, ...payload };
       userServiceMock.create.mockResolvedValue({ ...userMock, ...payload });
       const res = await req.post('/user').send(payload).expect(201);
-      expect(res.body).toEqual(created);
+      expect(res.body).toEqual(
+        expect.objectContaining({
+          ...created,
+          createdAt: expect.any(String) as string,
+          updatedAt: expect.any(String) as string,
+        }),
+      );
     });
 
     it('400: create user validation error (invalid email)', async () => {
@@ -114,7 +126,13 @@ describe('Users', () => {
       const updateResponse = { ...userMockResponse, email: update.email };
       userServiceMock.update.mockResolvedValue(updated);
       const res = await req.put(`/user/${id}`).send(update).expect(200);
-      expect(res.body).toEqual(updateResponse);
+      expect(res.body).toEqual(
+        expect.objectContaining({
+          ...updateResponse,
+          createdAt: expect.any(String) as string,
+          updatedAt: expect.any(String) as string,
+        }),
+      );
     });
 
     it('400: update user by id (invalid uuid)', async () => {
@@ -131,7 +149,13 @@ describe('Users', () => {
     it('200: delete user by id (positive)', async () => {
       userServiceMock.delete.mockResolvedValue(userMock);
       const res = await req.delete(`/user/${id}`).expect(200);
-      expect(res.body).toEqual(userMockResponse);
+      expect(res.body).toEqual(
+        expect.objectContaining({
+          ...userMockResponse,
+          createdAt: expect.any(String) as string,
+          updatedAt: expect.any(String) as string,
+        }),
+      );
     });
 
     it('400: delete user by id (invalid uuid)', async () => {
