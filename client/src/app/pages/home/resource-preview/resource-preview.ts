@@ -4,6 +4,5 @@ import { Component } from '@angular/core';
   selector: 'app-resource-preview',
   imports: [],
   templateUrl: './resource-preview.html',
-  styleUrl: './resource-preview.css',
 })
 export class ResourcePreview {}

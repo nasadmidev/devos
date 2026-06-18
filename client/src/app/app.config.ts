@@ -4,6 +4,7 @@ import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { provideClientHydration } from '@angular/platform-browser';
 import { provideHighlightOptions } from 'ngx-highlightjs';
+import { provideHttpClient } from '@angular/common/http';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -13,5 +14,6 @@ export const appConfig: ApplicationConfig = {
     provideHighlightOptions({
       fullLibraryLoader: () => import('highlight.js'),
     }),
+    provideHttpClient(),
   ],
 };
