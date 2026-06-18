@@ -1,0 +1,64 @@
+<section
+  class="flex w-[95%] mx-auto bg-zinc-900 p-4 rounded-2xl mt-10 gap-3 justify-between items-center"
+>
+  <form class="flex flex-col" [formRoot]="registerForm" method="post">
+    <h1 class="text-center text-2xl text-purple-600">Register</h1>
+    <label for="email" class="font-bold text-zinc-500 mb-2">Email</label>
+    <input
+      type="email"
+      id="email"
+      [formField]="registerForm.email"
+      class="bg-zinc-700 outline-none rounded-2xl text-amber-200 py-1 px-3 w-100 font-bold mb-2"
+    />
+    <label for="password" class="font-bold text-zinc-500 mb-2">Password</label>
+    <input
+      type="password"
+      id="password"
+      [formField]="registerForm.password"
+      class="bg-zinc-700 outline-none rounded-2xl text-amber-200 py-1 px-3 w-100 mb-2"
+    />
+    <label for="password" class="font-bold text-zinc-500 mb-2">Confirm Password</label>
+    <input
+      type="password"
+      id="confirmPassword"
+      [formField]="registerForm.confirmPassword"
+      class="bg-zinc-700 outline-none rounded-2xl text-amber-200 py-1 px-3 w-100 font-bold mb-2"
+    />
+    <input
+      type="submit"
+      value="Run Script"
+      class="cursor-pointer p-2 bg-purple-900 rounded-2xl mt-2 text-amber-200 font-bold"
+    />
+  </form>
+  <div class="w-3/4 flex flex-col items-center">
+    <pre class="w-full max-w-3xl">
+      <code
+      [highlight]="
+      `INSERT INTO
+      USER (email, password)
+      VALUES ('${registerForm().value().email}', '${'·'.repeat(registerForm().value().password.length)}');
+      `" language="sql" class="font-mono rounded-2xl mt-9">
+      </code>
+    </pre>
+    <div
+      class="w-full max-w-xl mx-auto mt-6 bg-zinc-950 border border-zinc-800 rounded-lg shadow-2xl overflow-hidden font-mono text-sm"
+    >
+      <div class="flex items-center justify-between px-4 py-2 bg-zinc-900 border-b border-zinc-800">
+        <div class="flex space-x-2">
+          <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+          <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+          <div class="w-3 h-3 rounded-full bg-green-500/80"></div>
+        </div>
+        <span class="text-xs text-zinc-500 font-sans select-none">bash - devos@system</span>
+        <div class="w-10"></div>
+      </div>
+
+      <div class="p-4 min-h-25 bg-zinc-950">
+        <pre class="m-0 p-0 bg-transparent">
+        <code [highlight]="getConsoleErrorMessage()" language="bash" class="bg-transparent! p-0!">
+        </code>
+      </pre>
+      </div>
+    </div>
+  </div>
+</section>

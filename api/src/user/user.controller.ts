@@ -23,6 +23,7 @@ import {
   ApiParam,
   ApiQuery,
 } from '@nestjs/swagger';
+import { Public } from '@/auth/jwt/public.decorator';
 
 @ApiTags('user')
 @Controller('user')
@@ -69,6 +70,7 @@ export class UserController {
     return await this.userService.findOne(id);
   }
 
+  @Public()
   @Post()
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Create a new user' })
