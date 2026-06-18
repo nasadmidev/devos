@@ -3,10 +3,15 @@ import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
 import { provideClientHydration } from '@angular/platform-browser';
+import { provideHighlightOptions } from 'ngx-highlightjs';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideRouter(routes), provideClientHydration()
-  ]
+    provideRouter(routes),
+    provideClientHydration(),
+    provideHighlightOptions({
+      fullLibraryLoader: () => import('highlight.js'),
+    }),
+  ],
 };

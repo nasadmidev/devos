@@ -3,5 +3,6 @@
   "editor.tabSize": 2,
   "cSpell.words": [
     "dtos"
-  ]
+  ],
+  "angular.enable-strict-mode-prompt": false
 }

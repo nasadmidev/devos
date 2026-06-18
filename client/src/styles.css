@@ -1,3 +1,14 @@
 /* You can add global styles to this file, and also import other style files */
-
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&family=Space+Grotesk:wght@300..700&display=swap');
 @import 'tailwindcss';
+@import 'highlight.js/styles/atom-one-dark.css';
+/* Color scheme from: https://colorhunt.co/palette/2d27274135438f43eef0eb8d */
+/* bg: stone-800 */
+/* elements: zinc-700 */
+/* accent: purple-600 */
+/* text: amber-200 */
+
+@theme {
+  --default-font-family: 'Space Grotesk', sans-serif;
+  --default-mono-font-family: 'Fira Code', monospace;
+}
