@@ -1,4 +1,4 @@
-export default interface ApiResponse<T = any> {
+export default interface ApiResponse<T = unknown> {
   path: string;
   statusCode: number;
   date: string;
