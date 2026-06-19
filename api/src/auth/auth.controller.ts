@@ -32,7 +32,9 @@ export class AuthController {
   })
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
   async login(@Req() req: Request & { user?: User }) {
-    return await this.authService.login(req.user as User);
+    return {
+      access_token: await this.authService.login(req.user as User),
+    };
   }
 
   @Public()

@@ -13,17 +13,20 @@ import { Highlight } from 'ngx-highlightjs';
 import { environment } from '@/environments/environment';
 import { lastValueFrom } from 'rxjs';
 import ApiResponse from '@app/types/ApiResponse';
-import UserModel from '@app/types/user/user.model';
-import { Terminal } from "@app/components/terminal/terminal";
+import { Terminal } from '@app/components/terminal/terminal';
+import { Oauth } from '@/app/components/oauth/oauth';
+import TokenResponse from '@/app/types/auth/token.response';
+import ApiException from '@/app/types/ApiException';
 
 @Component({
   selector: 'app-register',
-  imports: [FormField, Highlight, FormRoot, Terminal],
+  imports: [FormField, Highlight, FormRoot, Terminal, Oauth],
   templateUrl: './register.html',
 })
 export class Register {
   private readonly http: HttpClient = inject(HttpClient);
   private readonly date = new Date().toISOString();
+  protected apiUrl = environment.apiUrl;
 
   registerModel = signal({
     email: '',
@@ -32,13 +35,22 @@ export class Register {
   });
 
   getConsoleErrorMessage(): string {
-  const errors = this.registerForm().errorSummary()
+    const errors = this.registerForm().errorSummary();
 
-  if (!errors || errors.length === 0) {
-    return `devos@system:~$ █`;
-  };
+    if (!errors || errors.length === 0) {
+      return `devos@system:~$ █`;
+    }
 
-  return `[devos-cli] ❌ Error: Operation failed with exit code 1
+    if (errors[0].kind === 'successfully') {
+      return `[devos-cli] ✅ The process complete with exit code 0
+    [type]      ${errors[0].kind.toUpperCase()}
+    [message]   ${errors[0].message || 'An unhandled exception occurred in the auth controller.'}
+    [timestamp] ${this.date}
+
+devos@system:~$ █`;
+    }
+
+    return `[devos-cli] ❌ Error: Operation failed with exit code 1
     [type]      ${errors[0].kind.toUpperCase()}
     [message]   ${errors[0].message || 'An unhandled exception occurred in the auth controller.'}
     [timestamp] ${this.date}
@@ -67,11 +79,14 @@ devos@system:~$ █`;
           }
           try {
             const user = await lastValueFrom(
-              this.http.post<ApiResponse<UserModel>>(`${environment.apiUrl}/user`, { email, password }),
+              this.http.post<ApiResponse<TokenResponse>>(`${environment.apiUrl}/user`, {
+                email,
+                password,
+              }),
             );
             if (user.statusCode === 201) {
-              console.log(user.data);
-              return { kind: 'successfully' };
+              console.log(user.data.access_token);
+              return { kind: 'successfully', message: 'user created, redirecting to dashboard' };
             } else {
               return {
                 kind: 'serverError',
@@ -79,7 +94,16 @@ devos@system:~$ █`;
               };
             }
           } catch (err) {
-            return { kind: 'promiseError', message: `${err}` };
+            const exception = err as { error: ApiException };
+            if (exception.error.statusCode && exception.error.message) {
+              if (exception.error.statusCode === 401) {
+                return { kind: 'unauthorized', message: 'Email or password invalid' };
+              } else {
+                return { kind: 'exception', message: exception.error.message };
+              }
+            } else {
+              return { kind: 'promiseError', message: JSON.stringify(err as object) };
+            }
           }
         },
       },

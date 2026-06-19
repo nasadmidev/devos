@@ -1,12 +1,20 @@
 import {
   IsEmail,
+  IsEnum,
   IsNotEmpty,
+  IsOptional,
   IsString,
   IsStrongPassword,
   MaxLength,
 } from 'class-validator';
 
-import { PartialType, ApiProperty } from '@nestjs/swagger';
+import {
+  PartialType,
+  ApiProperty,
+  PickType,
+  ApiPropertyOptional,
+} from '@nestjs/swagger';
+import { Role } from '@/generated/prisma/enums';
 
 export class CreateUserDTO {
   @ApiProperty({
@@ -34,6 +42,21 @@ export class CreateUserDTO {
     minSymbols: 0,
   })
   password!: string;
+}
+
+export class CreateUserByAdminDTO extends PickType(CreateUserDTO, [
+  'email',
+  'password',
+]) {
+  @ApiPropertyOptional({
+    name: 'role',
+    description: 'the new user role',
+    enum: Role,
+  })
+  @IsOptional()
+  @IsString()
+  @IsEnum(Role)
+  role?: Role;
 }
 
 export class UpdateUserDTO extends PartialType(CreateUserDTO) {}

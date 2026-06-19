@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import { validateUUID } from '@/common/pipes/uuid-validator/uuid-validator.pipe';
-import { CreateUserDTO, UpdateUserDTO } from './user.dto';
+import { CreateUserByAdminDTO, CreateUserDTO, UpdateUserDTO } from './user.dto';
 import { hash } from 'bcrypt';
 
 @Injectable()
@@ -40,7 +40,7 @@ export class UserService {
     return this.prisma.user.findUnique({ where: { oauthId } });
   }
 
-  async create(data: CreateUserDTO) {
+  async create(data: CreateUserDTO | CreateUserByAdminDTO) {
     const parsedData = { ...data, password: await hash(data.password, 10) };
     return this.prisma.user.create({ data: parsedData });
   }

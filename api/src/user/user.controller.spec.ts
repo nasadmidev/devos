@@ -4,9 +4,9 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { UserService } from './user.service';
 import { JwtGuard } from '@/auth/jwt/jwt.guard';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '@/generated/prisma/client';
+import { Role, User } from '@/generated/prisma/client';
 import { RolesGuard } from '@/auth/roles/role.guard';
-import { RequestAuthorized } from '@/auth/auth.service';
+import { AuthService, RequestAuthorized } from '@/auth/auth.service';
 import {
   user as mockUser,
   createUser as createUserDTO,
@@ -15,8 +15,10 @@ import {
 describe('UserController', () => {
   let controller: UserController;
   let userServiceMock: DeepMockProxy<UserService>;
+  let authServiceMock: DeepMockProxy<AuthService>;
 
   beforeEach(async () => {
+    authServiceMock = mockDeep<AuthService>();
     userServiceMock = mockDeep<UserService>();
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UserController],
@@ -24,6 +26,10 @@ describe('UserController', () => {
         {
           provide: UserService,
           useValue: userServiceMock,
+        },
+        {
+          provide: AuthService,
+          useValue: authServiceMock,
         },
         {
           provide: JwtGuard,
@@ -63,9 +69,14 @@ describe('UserController', () => {
     });
 
     it('should create a new user', async () => {
-      const createdUser = { ...mockUser, ...createUserDTO, id: '2' };
+      const createdUser = {
+        ...mockUser,
+        ...createUserDTO,
+        id: '2',
+        role: Role['ADMIN'],
+      };
       userServiceMock.create.mockResolvedValue(createdUser);
-      const result = await controller.createUser(createUserDTO);
+      const result = await controller.createUserByAdmin(createUserDTO);
       expect(result).toEqual(createdUser);
     });
 
@@ -87,6 +98,18 @@ describe('UserController', () => {
   });
 
   describe('user operations', () => {
+    it('should create a new user', async () => {
+      const createdUser = {
+        ...mockUser,
+        ...createUserDTO,
+        id: '2',
+      };
+      userServiceMock.create.mockResolvedValue(createdUser);
+      authServiceMock.login.mockResolvedValue('token');
+      const result = await controller.createUser(createUserDTO);
+      expect(result).toEqual({ access_token: 'token' });
+    });
+
     it('should return user data for authenticated user', async () => {
       userServiceMock.findOne.mockResolvedValue(mockUser);
       const req = { user: { sub: '1' } } as RequestAuthorized;

@@ -11,16 +11,40 @@ import { JwtGuard } from '@/auth/jwt/jwt.guard';
 import { RolesGuard } from '@/auth/roles/role.guard';
 import { randomUUID } from 'node:crypto';
 import { User } from '@/generated/prisma/client';
+import { JwtModule } from '@nestjs/jwt';
+import { AuthService } from '@/auth/auth.service';
+import { AuthModule } from '@/auth/auth.module';
+import ms from 'ms';
+import { PrismaModule } from '@/prisma/prisma.module';
+
+process.env.JWT_EXPIRES = '1h';
+process.env.JWT_SECRET = 'secret';
+process.env.DATABASE_URL =
+  'postgresql://postgres:postgres@localhost:5432/devos?schema=public&connection_limit=5';
+process.env.GOOGLE_CLIENT_ID = 'id';
+process.env.GOOGLE_CLIENT_SECRET = 'secret';
+process.env.GITHUB_CLIENT_ID = 'id';
+process.env.GITHUB_CLIENT_SECRET = 'secret';
 
 describe('Users', () => {
   let app: INestApplication;
   let userServiceMock: DeepMockProxy<UserService>;
+  let authServiceMock: DeepMockProxy<AuthService>;
   let req: TestAgent;
 
   beforeAll(async () => {
     userServiceMock = mockDeep<UserService>();
+    authServiceMock = mockDeep<AuthService>();
     const moduleRef = await Test.createTestingModule({
-      imports: [UserModule],
+      imports: [
+        UserModule,
+        AuthModule,
+        JwtModule.register({
+          secret: 'secret',
+          signOptions: { expiresIn: ms('1h') },
+        }),
+        PrismaModule,
+      ],
       providers: [
         { provide: JwtGuard, useValue: { canActive: () => true } },
         { provide: RolesGuard, useValue: { canActive: () => true } },
@@ -30,6 +54,8 @@ describe('Users', () => {
       .useValue({})
       .overrideProvider(UserService)
       .useValue(userServiceMock)
+      .overrideProvider(AuthService)
+      .useValue(authServiceMock)
       .compile();
     app = moduleRef.createNestApplication();
     app.useGlobalPipes(
@@ -101,16 +127,10 @@ describe('Users', () => {
   describe('POST /', () => {
     it('201: create user (positive)', async () => {
       const payload = { email: 'new@user.com', password: 'Test1234' };
-      const created = { ...userMockResponse, ...payload };
       userServiceMock.create.mockResolvedValue({ ...userMock, ...payload });
+      authServiceMock.login.mockResolvedValue('token');
       const res = await req.post('/user').send(payload).expect(201);
-      expect(res.body).toEqual(
-        expect.objectContaining({
-          ...created,
-          createdAt: expect.any(String) as string,
-          updatedAt: expect.any(String) as string,
-        }),
-      );
+      expect(res.body).toEqual({ access_token: 'token' });
     });
 
     it('400: create user validation error (invalid email)', async () => {

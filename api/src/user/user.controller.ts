@@ -10,8 +10,8 @@ import {
   Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import type { RequestAuthorized } from '@/auth/auth.service';
-import { CreateUserDTO, UpdateUserDTO } from './user.dto';
+import { AuthService, type RequestAuthorized } from '@/auth/auth.service';
+import { CreateUserByAdminDTO, CreateUserDTO, UpdateUserDTO } from './user.dto';
 import { Roles } from '@/auth/roles/role.decorator';
 import { Role } from '@/generated/prisma/browser';
 import { UuidValidatorPipe } from '@/common/pipes/uuid-validator/uuid-validator.pipe';
@@ -28,7 +28,10 @@ import { Public } from '@/auth/jwt/public.decorator';
 @ApiTags('user')
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly authService: AuthService,
+  ) {}
 
   @Get('all')
   @Roles(Role['ADMIN'])
@@ -75,9 +78,21 @@ export class UserController {
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Create a new user' })
   @ApiResponse({ status: 201, description: 'User created successfully' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
   async createUser(@Body() data: CreateUserDTO) {
-    return await this.userService.create(data);
+    const user = await this.userService.create(data);
+    return {
+      access_token: await this.authService.login(user),
+    };
+  }
+
+  @Roles('ADMIN')
+  @Post()
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Create a new user by admin' })
+  @ApiResponse({ status: 201, description: 'User created successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async createUserByAdmin(@Body() data: CreateUserByAdminDTO) {
+    return this.userService.create(data);
   }
 
   @Put()

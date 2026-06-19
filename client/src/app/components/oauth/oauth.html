@@ -1,0 +1,24 @@
+<ul class="{{ styles() }}">
+  <li>
+    <a
+      class="font-bold flex text-black bg-white w-full min-w-60 text-center p-1 rounded-2xl cursor-pointer items-center justify-center gap-3"
+      href="{{ apiUrl }}/auth/google"
+    >
+      Login with Google
+      @if (isBrowser) {
+        <svg [cIcon]="icons.cibGoogle" class="size-4" title="Google Icon"></svg>
+      }
+    </a>
+  </li>
+  <li>
+    <a
+      class="font-bold flex text-white bg-zinc-950 w-full min-w-60 text-center p-1 rounded-2xl cursor-pointer items-center justify-center gap-3"
+      href="{{ apiUrl }}/auth/github"
+    >
+      Login with house
+      @if (isBrowser) {
+        <svg [cIcon]="icons.cibGithub" class="size-4 fill-white" title="Github Icon"></svg>
+      }
+    </a>
+  </li>
+</ul>
