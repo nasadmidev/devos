@@ -10,18 +10,20 @@ import {
   required,
 } from '@angular/forms/signals';
 import { Highlight } from 'ngx-highlightjs';
-import { environment } from '../../../environments/environment';
+import { environment } from '@/environments/environment';
 import { lastValueFrom } from 'rxjs';
-import ApiResponse from '../../types/ApiResponse';
-import UserModel from '../../types/user/user.model';
+import ApiResponse from '@app/types/ApiResponse';
+import UserModel from '@app/types/user/user.model';
+import { Terminal } from "@app/components/terminal/terminal";
 
 @Component({
   selector: 'app-register',
-  imports: [FormField, Highlight, FormRoot],
+  imports: [FormField, Highlight, FormRoot, Terminal],
   templateUrl: './register.html',
 })
 export class Register {
   private readonly http: HttpClient = inject(HttpClient);
+  private readonly date = new Date().toISOString();
 
   registerModel = signal({
     email: '',
@@ -39,7 +41,7 @@ export class Register {
   return `[devos-cli] ❌ Error: Operation failed with exit code 1
     [type]      ${errors[0].kind.toUpperCase()}
     [message]   ${errors[0].message || 'An unhandled exception occurred in the auth controller.'}
-    [timestamp] ${new Date().toISOString()}
+    [timestamp] ${this.date}
 
 devos@system:~$ █`;
   }

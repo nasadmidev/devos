@@ -3,8 +3,12 @@ name: Devos Backend CI
 on:
   push:
     branches: [ main ]
+    paths:
+      - 'api/**'
   pull_request:
     branches: [ main ]
+    paths:
+      - 'api/**'
 
 jobs:
   test-and-build:
