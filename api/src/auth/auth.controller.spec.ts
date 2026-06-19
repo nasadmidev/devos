@@ -4,6 +4,7 @@ import { AuthService } from './auth.service';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
+import { User } from '@/generated/prisma/client';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -39,9 +40,13 @@ describe('AuthController', () => {
       const mockReq = {
         user: { id: 'user-id', username: 'test' },
       } as Partial<Request>;
-      const result = await controller.login(mockReq as Request);
+      const result = await controller.login(
+        mockReq as Request & { user: User },
+      );
       expect(mockAuthService.login).toHaveBeenCalledWith(mockReq.user);
-      expect(result).toBe('jwt-token');
+      expect(result).toEqual({
+        access_token: 'jwt-token',
+      });
     });
   });
 

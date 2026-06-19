@@ -1,12 +1,12 @@
 enum Role {
-  USER = "USER",
-  ADMIN = "ADMIN"
+  USER = 'USER',
+  ADMIN = 'ADMIN',
 }
 
 enum AuthType {
-  LOCAL = "LOCAL",
-  GOOGLE = "GOOGLE",
-  GITHUB = "GITHUB",
+  LOCAL = 'LOCAL',
+  GOOGLE = 'GOOGLE',
+  GITHUB = 'GITHUB',
 }
 
 export default interface UserModel {

@@ -1,6 +1,6 @@
 import { Component, inject, input, PLATFORM_ID } from '@angular/core';
-import { IconDirective } from '@coreui/icons-angular'
-import { cibGoogle, cibGithub } from '@coreui/icons'
+import { IconDirective } from '@coreui/icons-angular';
+import { cibGoogle, cibGithub } from '@coreui/icons';
 import { environment } from '@/environments/environment';
 import { isPlatformBrowser } from '@angular/common';
 

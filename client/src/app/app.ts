@@ -20,9 +20,7 @@ export class App implements OnInit {
   ngOnInit() {
     this.http
       .get<ApiResponse<HealthResponse>>(`${environment.apiUrl}/health`)
-      .pipe(
-        catchError(() => of({ data: { status: 'error' } })),
-      ) 
+      .pipe(catchError(() => of({ data: { status: 'error' } })))
       .subscribe((health) => {
         if (health.data.status !== 'ok') {
           this.isHealthy.set(false);
