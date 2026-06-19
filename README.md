@@ -33,4 +33,4 @@ Para el MVP, el núcleo de la aplicación será un Feed Unificado donde conviven
 2. **Base de datos**: Prisma con PostgreSQL y Redis con ioredis
 3. **Autenticación**: JWT + OAuth 2.0
 4. **Seguridad**: CORS + Helmet
-5. **Frontend**: ...
+5. **Frontend**: Angular + Tailwind
