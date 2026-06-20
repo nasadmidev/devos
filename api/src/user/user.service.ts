@@ -3,6 +3,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { validateUUID } from '@/common/pipes/uuid-validator/uuid-validator.pipe';
 import { CreateUserByAdminDTO, CreateUserDTO, UpdateUserDTO } from './user.dto';
 import { hash } from 'bcrypt';
+import { UserSelect } from '@/generated/prisma/models';
 
 @Injectable()
 export class UserService {
@@ -23,10 +24,18 @@ export class UserService {
     });
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, select?: UserSelect) {
     validateUUID(id);
     return this.prisma.user.findUnique({
       where: { id },
+      select: {
+        ...select,
+        id: true,
+        email: true,
+        oauthId: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
   }
 

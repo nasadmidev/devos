@@ -19,4 +19,9 @@ export const routes: Routes = [
       },
     ],
   },
+  {
+    path: 'dashboard',
+    loadComponent: () => import('./layouts/dashboard/dashboard').then(m => m.Dashboard),
+    children: [], 
+  }
 ];

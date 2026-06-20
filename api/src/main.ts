@@ -6,6 +6,7 @@ import { ResponseInterceptor } from './common/interceptors/response.interceptor'
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import helmet, { type HelmetOptions } from 'helmet';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import cookieParser from 'cookie-parser';
 
 const corsOptions: CorsOptions = {
   methods: ['GET', 'OPTION', 'DELETE', 'PUT', 'POST', 'HEAD'],
@@ -52,6 +53,7 @@ async function bootstrap() {
   app.useGlobalInterceptors(new ResponseInterceptor());
   app.enableCors(corsOptions);
   app.use(helmet(helmetOptions));
+  app.use(cookieParser());
 
   const config = new DocumentBuilder()
     .setTitle('NestJS Prisma Template API')

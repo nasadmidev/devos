@@ -43,6 +43,13 @@ describe('UserService', () => {
     expect(result).toEqual(user);
     expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
       where: { id },
+      select: {
+        createdAt: true,
+        email: true,
+        id: true,
+        oauthId: true,
+        updatedAt: true,
+      },
     });
   });
 

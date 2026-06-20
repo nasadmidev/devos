@@ -26,7 +26,9 @@ export class JwtGuard implements CanActivate {
     if (isPublic) return true;
 
     const request = context.switchToHttp().getRequest<Request>();
-    const token = this.extractTokenFromHeader(request);
+    const token =
+      this.extractTokenFromCookie(request) ??
+      this.extractTokenFromHeader(request);
     if (!token) throw new UnauthorizedException('Missing token');
     try {
       const payload = await this.jwt.verifyAsync<JwtPayload>(token, {
@@ -45,6 +47,17 @@ export class JwtGuard implements CanActivate {
       }
       return false;
     }
+  }
+
+  extractTokenFromCookie(request: Request): string | null {
+    const authCookie = request.cookies?.['access_token'] as string | undefined;
+    if (!authCookie) return null;
+    if (authCookie.startsWith('Bearer ')) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const [_, token] = authCookie.split(' ');
+      return token || null;
+    }
+    return authCookie;
   }
 
   extractTokenFromHeader(request: Request): string | null {

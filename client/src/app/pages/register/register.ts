@@ -17,6 +17,7 @@ import { Terminal } from '@app/components/terminal/terminal';
 import { Oauth } from '@/app/components/oauth/oauth';
 import TokenResponse from '@/app/types/auth/token.response';
 import ApiException from '@/app/types/ApiException';
+import { CookieService } from '@/app/common/services/cookie.service';
 
 @Component({
   selector: 'app-register',
@@ -24,6 +25,7 @@ import ApiException from '@/app/types/ApiException';
   templateUrl: './register.html',
 })
 export class Register {
+  private readonly cookie: CookieService = inject(CookieService);
   private readonly http: HttpClient = inject(HttpClient);
   private readonly date = new Date().toISOString();
   protected apiUrl = environment.apiUrl;
@@ -85,7 +87,8 @@ devos@system:~$ █`;
               }),
             );
             if (user.statusCode === 201) {
-              console.log(user.data.access_token);
+              this.cookie.setCookie({ name: 'access_token', value: user.data.access_token, expires: '1h' })
+              window.location.href = '/dashboard';
               return { kind: 'successfully', message: 'user created, redirecting to dashboard' };
             } else {
               return {

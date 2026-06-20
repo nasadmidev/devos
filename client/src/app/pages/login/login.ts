@@ -1,3 +1,4 @@
+import { CookieService } from '@/app/common/services/cookie.service';
 import { Oauth } from '@/app/components/oauth/oauth';
 import { Terminal } from '@/app/components/terminal/terminal';
 import ApiException from '@/app/types/ApiException';
@@ -16,6 +17,7 @@ import { lastValueFrom } from 'rxjs';
   templateUrl: './login.html',
 })
 export class Login {
+  private readonly cookie = inject(CookieService);
   private readonly http = inject(HttpClient);
   readonly environment = environment;
   private readonly date = new Date().toISOString();
@@ -66,9 +68,9 @@ devos@system:~$ █`;
                 password,
               }),
             );
-            console.log(token);
             if (token.statusCode === 201) {
-              console.log(token.data.access_token);
+              this.cookie.setCookie({ name: 'access_token', value: token.data.access_token, expires: '1h' })
+              window.location.href = '/dashboard';
               return { kind: 'successfully', message: 'redirecting to dashboard' };
             } else {
               return { kind: 'token', message: 'token not received' };

@@ -11,7 +11,12 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthService, type RequestAuthorized } from '@/auth/auth.service';
-import { CreateUserByAdminDTO, CreateUserDTO, UpdateUserDTO } from './user.dto';
+import {
+  CreateUserByAdminDTO,
+  CreateUserDTO,
+  SelectUserQueryDTO,
+  UpdateUserDTO,
+} from './user.dto';
 import { Roles } from '@/auth/roles/role.decorator';
 import { Role } from '@/generated/prisma/browser';
 import { UuidValidatorPipe } from '@/common/pipes/uuid-validator/uuid-validator.pipe';
@@ -24,6 +29,7 @@ import {
   ApiQuery,
 } from '@nestjs/swagger';
 import { Public } from '@/auth/jwt/public.decorator';
+import { selectTransformer } from '@/common/transformers/select.transformer';
 
 @ApiTags('user')
 @Controller('user')
@@ -55,9 +61,13 @@ export class UserController {
   @ApiOperation({ summary: 'Get current authenticated user' })
   @ApiResponse({ status: 200, description: 'Current user data' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async getUser(@Req() req: RequestAuthorized) {
+  async getUser(
+    @Req() req: RequestAuthorized,
+    @Query() query: SelectUserQueryDTO,
+  ) {
     const { user } = req;
-    return await this.userService.findOne(user.sub);
+    const select = query?.select ? selectTransformer(query.select) : undefined;
+    return await this.userService.findOne(user.sub, select);
   }
 
   @Get(':id')
